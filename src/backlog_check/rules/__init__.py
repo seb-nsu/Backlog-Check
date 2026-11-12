@@ -10,6 +10,7 @@ from .bc01_missing_criteria import check_bc01
 from .bc02_unmeasurable import check_bc02
 from .bc03_too_large import check_bc03
 from .bc04_multiple_concerns import check_bc04
+from .bc05_missing_benefit import check_bc05
 
 Rule = Callable[[Context], Iterable[Finding]]
 
@@ -18,4 +19,5 @@ RULES: dict[str, Rule] = {
     "BC-02": check_bc02,
     "BC-03": check_bc03,
     "BC-04": check_bc04,
+    "BC-05": check_bc05,
 }
