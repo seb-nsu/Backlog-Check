@@ -13,6 +13,7 @@ from .bc04_multiple_concerns import check_bc04
 from .bc05_missing_benefit import check_bc05
 from .bc06_missing_estimate import check_bc06
 from .bc07_hidden_dependency import check_bc07
+from .bc08_dependency_order import check_bc08
 
 Rule = Callable[[Context], Iterable[Finding]]
 
@@ -24,4 +25,5 @@ RULES: dict[str, Rule] = {
     "BC-05": check_bc05,
     "BC-06": check_bc06,
     "BC-07": check_bc07,
+    "BC-08": check_bc08,
 }
