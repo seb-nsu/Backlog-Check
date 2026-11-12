@@ -1,0 +1,125 @@
+{
+  "rule": "BC-10",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen",
+          "description": "Kundin lädt die Rechnung als PDF herunter"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Profil bearbeiten"
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen",
+          "description": "Kundin lädt die Rechnung als PDF herunter, sofort."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "severity": "info",
+          "item": "DE-3",
+          "related": [
+            "DE-1"
+          ],
+          "field": null,
+          "span": null,
+          "message_key": "bc10.possible_duplicate",
+          "params": {
+            "other": "DE-1",
+            "similarity": 0.89
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen",
+          "description": "Kundin lädt die Rechnung als PDF herunter"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen",
+          "description": "Kundin lädt die Rechnung als PDF herunter, sofort bitte."
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen",
+          "description": "Kundin lädt die Rechnung als PDF herunter",
+          "status": "done"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Download invoice as PDF",
+          "description": "Customer downloads the invoice as PDF"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "DOWNLOAD INVOICE AS PDF",
+          "description": "Customer downloads the invoice as PDF now"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "severity": "info",
+          "item": "EN-2",
+          "related": [
+            "EN-1"
+          ],
+          "field": null,
+          "span": null,
+          "message_key": "bc10.possible_duplicate",
+          "params": {
+            "other": "EN-1",
+            "similarity": 0.88
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Download invoice as PDF",
+          "description": "Customer downloads the invoice as PDF"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Download invoice as PDF",
+          "description": "Customer downloads the invoice as PDF right now"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

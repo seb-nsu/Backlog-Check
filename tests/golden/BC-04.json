@@ -1,0 +1,113 @@
+{
+  "rule": "BC-04",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung erstellen und versenden"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Belege hochladen",
+          "description": "Belege für den Abschluss. Als Buchhalterin möchte ich Belege hochladen und prüfen, damit der Abschluss pünktlich ist."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-04",
+          "severity": "info",
+          "item": "DE-1",
+          "related": [],
+          "field": "title",
+          "span": [
+            19,
+            22
+          ],
+          "message_key": "bc04.multiple_concerns",
+          "params": {
+            "word": "und"
+          }
+        },
+        {
+          "rule": "BC-04",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [],
+          "field": "description",
+          "span": [
+            71,
+            74
+          ],
+          "message_key": "bc04.multiple_concerns",
+          "params": {
+            "word": "und"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Grundriss anzeigen",
+          "description": "Als Buchhalterin möchte ich Belege hochladen, damit der Abschluss pünktlich ist. Betrifft Rechnungen und Gutschriften."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Export AND print the report"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-04",
+          "severity": "info",
+          "item": "EN-1",
+          "related": [],
+          "field": "title",
+          "span": [
+            7,
+            10
+          ],
+          "message_key": "bc04.multiple_concerns",
+          "params": {
+            "word": "AND"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Export the report",
+          "description": "As a manager I want to export the report so that I can share it. Covers sales and returns."
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Brand colours"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

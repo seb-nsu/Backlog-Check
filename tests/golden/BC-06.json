@@ -1,0 +1,129 @@
+{
+  "rule": "BC-06",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "rank": 3
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "rank": 20
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-06",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "estimate",
+          "span": null,
+          "message_key": "bc06.missing_estimate",
+          "params": {
+            "rank": 3,
+            "top": 20
+          }
+        },
+        {
+          "rule": "BC-06",
+          "severity": "warning",
+          "item": "DE-2",
+          "related": [],
+          "field": "estimate",
+          "span": null,
+          "message_key": "bc06.missing_estimate",
+          "params": {
+            "rank": 20,
+            "top": 20
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "rank": 21
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "rank": 2,
+          "estimate": 0
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "rank": 1,
+          "status": "abgeschlossen"
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "config": {
+        "estimate_required_top": 5
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "rank": 5
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-06",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "estimate",
+          "span": null,
+          "message_key": "bc06.missing_estimate",
+          "params": {
+            "rank": 5,
+            "top": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "config": {
+        "estimate_required_top": 5
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "rank": 6
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

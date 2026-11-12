@@ -1,0 +1,139 @@
+{
+  "rule": "BC-07",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "description": "Setzt die Schnittstelle aus DE-2 voraus, siehe auch DE-21 und DE-1."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Schnittstelle bereitstellen"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-07",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [
+            "DE-2"
+          ],
+          "field": "description",
+          "span": [
+            28,
+            32
+          ],
+          "message_key": "bc07.hidden_dependency",
+          "params": {
+            "id": "DE-2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "description": "Setzt die Schnittstelle aus DE-2 voraus, siehe auch DE-21 und DE-1.",
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Schnittstelle bereitstellen",
+          "description": "Gehört zu DE-E.",
+          "parent": "DE-E"
+        },
+        {
+          "id": "DE-E",
+          "kind": "epic",
+          "title": "Schnittstellen",
+          "description": "Umfasst DE-2."
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "description": "Hängt an DE-1.",
+          "status": "done"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Report (after EN-2)",
+          "acceptance_criteria": [
+            "Works with the import from EN-2."
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Import",
+          "status": "done"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-07",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [
+            "EN-2"
+          ],
+          "field": "title",
+          "span": [
+            14,
+            18
+          ],
+          "message_key": "bc07.hidden_dependency",
+          "params": {
+            "id": "EN-2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "acceptance_criteria": [
+            "Works with the import from EN-2."
+          ],
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Import EN-20 data"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

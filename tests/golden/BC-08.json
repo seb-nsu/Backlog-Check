@@ -1,0 +1,202 @@
+{
+  "rule": "BC-08",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "rank": 1,
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "rank": 2
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "rank": 4,
+          "priority": "must",
+          "depends_on": [
+            "DE-9",
+            "DE-4"
+          ]
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4",
+          "rank": 3,
+          "priority": "could"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-08",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [
+            "DE-2"
+          ],
+          "field": "depends_on[0]",
+          "span": null,
+          "message_key": "bc08.rank_order",
+          "params": {
+            "dependency": "DE-2",
+            "rank": 1,
+            "dependency_rank": 2
+          }
+        },
+        {
+          "rule": "BC-08",
+          "severity": "warning",
+          "item": "DE-3",
+          "related": [
+            "DE-4"
+          ],
+          "field": "depends_on[1]",
+          "span": null,
+          "message_key": "bc08.priority_order",
+          "params": {
+            "dependency": "DE-4",
+            "priority": "must",
+            "dependency_priority": "could"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "rank": 2,
+          "priority": "should",
+          "depends_on": [
+            "DE-2",
+            "DE-3"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "rank": 1,
+          "priority": "should"
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "rank": 3,
+          "priority": "could",
+          "status": "done"
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4",
+          "rank": 1,
+          "priority": "must",
+          "status": "done",
+          "depends_on": [
+            "DE-5"
+          ]
+        },
+        {
+          "id": "DE-5",
+          "kind": "story",
+          "title": "Eintrag DE-5",
+          "rank": 9,
+          "priority": "wont"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "rank": 1,
+          "priority": "must",
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2",
+          "rank": 2,
+          "priority": "should"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-08",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [
+            "EN-2"
+          ],
+          "field": "depends_on[0]",
+          "span": null,
+          "message_key": "bc08.rank_and_priority_order",
+          "params": {
+            "dependency": "EN-2",
+            "rank": 1,
+            "dependency_rank": 2,
+            "priority": "must",
+            "dependency_priority": "should"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "rank": 3,
+          "priority": "must",
+          "depends_on": [
+            "EN-2",
+            "EN-3"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2",
+          "priority": "must"
+        },
+        {
+          "id": "EN-3",
+          "kind": "story",
+          "title": "Eintrag EN-3",
+          "rank": 2
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

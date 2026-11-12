@@ -1,0 +1,196 @@
+{
+  "rule": "BC-09",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4",
+          "depends_on": [
+            "DE-1"
+          ]
+        },
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "depends_on": [
+            "DE-3"
+          ]
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "depends_on": [
+            "DE-1"
+          ]
+        },
+        {
+          "id": "DE-5",
+          "kind": "story",
+          "title": "Eintrag DE-5",
+          "depends_on": [
+            "DE-5"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-09",
+          "severity": "error",
+          "item": "DE-1",
+          "related": [
+            "DE-2",
+            "DE-3"
+          ],
+          "field": "depends_on",
+          "span": null,
+          "message_key": "bc09.cycle",
+          "params": {
+            "items": [
+              "DE-1",
+              "DE-2",
+              "DE-3"
+            ]
+          }
+        },
+        {
+          "rule": "BC-09",
+          "severity": "error",
+          "item": "DE-5",
+          "related": [],
+          "field": "depends_on",
+          "span": null,
+          "message_key": "bc09.cycle",
+          "params": {
+            "items": [
+              "DE-5"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "depends_on": [
+            "DE-2",
+            "DE-3"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "depends_on": [
+            "DE-3"
+          ]
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "depends_on": [
+            "DE-X"
+          ]
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4",
+          "depends_on": [
+            "DE-5"
+          ]
+        },
+        {
+          "id": "DE-5",
+          "kind": "story",
+          "title": "Eintrag DE-5",
+          "depends_on": [
+            "DE-4"
+          ],
+          "status": "erledigt"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2",
+          "depends_on": [
+            "EN-1"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-09",
+          "severity": "error",
+          "item": "EN-1",
+          "related": [
+            "EN-2"
+          ],
+          "field": "depends_on",
+          "span": null,
+          "message_key": "bc09.cycle",
+          "params": {
+            "items": [
+              "EN-1",
+              "EN-2"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}
