@@ -28,6 +28,10 @@ class Context:
         # Done items are not checked but still count as targets of dependencies.
         self.active = [item for item in items if not config.is_done(item.status)]
         self.active_ids = {item.id for item in self.active}
+        self.children: dict[str, list[str]] = {}
+        for item in items:
+            if item.parent is not None:
+                self.children.setdefault(item.parent, []).append(item.id)
         languages = config.languages()
         self.vague_words = _merge(config.vague_words[lang] for lang in languages)
         self.benefit_patterns = [
@@ -69,6 +73,14 @@ def word_pattern(word: str) -> re.Pattern[str]:
     prefix = r"(?<![\w-])" if re.match(r"\w", word) else ""
     suffix = r"(?![\w-])" if re.search(r"\w$", word) else ""
     return re.compile(prefix + re.escape(word) + suffix, re.IGNORECASE)
+
+
+UNIT_TOKEN = re.compile(r"[^\W\d_]+(?:['\u2019][^\W\d_]+)*|[%€]")
+
+
+def has_unit(text: str, units: dict[str, str]) -> bool:
+    """Whether ``text`` contains a unit of measurement as a whole word (or ``%``, ``€``)."""
+    return any(token.casefold() in units for token in UNIT_TOKEN.findall(text))
 
 
 def _merge(lists) -> list[str]:

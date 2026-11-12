@@ -1,5 +1,5 @@
 from backlog_check import Config, check
-from backlog_check.context import Context, text_fields, word_pattern
+from backlog_check.context import Context, has_unit, text_fields, word_pattern
 from backlog_check.model import Finding, Item
 
 
@@ -49,3 +49,12 @@ def test_text_fields_and_word_pattern():
     assert not word_pattern("fast").search("fast-track")
     assert word_pattern("Fast").search("Ist fast fertig")
     assert word_pattern("%").search("5 %")
+
+
+def test_context_children_and_units():
+    items = [Item("E", "epic", "Epic"), Item("A", "story", "T", parent="E"), Item("B", "bug", "U")]
+    ctx = Context(items, Config())
+    assert ctx.children == {"E": ["A"]}
+    assert has_unit("in drei Sekunden", ctx.units)
+    assert has_unit("unter 5 %", ctx.units)
+    assert not has_unit("it's easy", Context([], Config.from_dict({"language": "en"})).units)
