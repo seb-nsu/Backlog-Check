@@ -37,6 +37,7 @@ Eine Liste von Einträgen. Felder (Pflicht fett):
 | `status` | Text oder leer | Frei; `done` und `closed` werden von der Prüfung ausgenommen (einstellbar) |
 | `depends_on` | Liste von Kennungen | Eingetragene Abhängigkeiten |
 | `parent` | Kennung oder leer | Übergeordnetes Epic |
+| `updated` | Datum oder leer | Letzte Änderung (`2026-11-12`, `12.11.2026` oder Jira-Format `12/Nov/26 1:06 PM`); für BC-13 |
 
 **CSV:** eine Zeile je Eintrag, Kopfzeile mit den Feldnamen. Listenfelder (`acceptance_criteria`, `depends_on`) trennt ein einstellbares Zeichen, Standard ist der Zeilenumbruch innerhalb der Zelle oder `|`. Die Kommandozeile bildet abweichende Spaltennamen über eine Zuordnung ab (`--map "Summary=title"`), damit Exporte aus Jira und Excel ohne Umbau lesbar sind.
 
@@ -77,6 +78,16 @@ Dazu eine Zusammenfassung: Zahl der Einträge, Zahl der Befunde je Regel und Sch
 | BC-10 | Mögliche Dublette | Ähnlichkeit von Titel und Beschreibung zweier Einträge über der Schwelle (Wortmengen nach Normalisierung, Standard 0,8) | info |
 | BC-11 | Widersprüchliche Werte | Zwei Einträge nennen für denselben Begriff unterschiedliche Zahlen mit Einheit, z. B. „Frist 5 Tage“ und „Frist 10 Tage“ | info |
 | BC-12 | Struktur unvollständig | Epic ohne Stories oder Story ohne Epic, wenn der Backlog überhaupt Epics enthält | info |
+| BC-13 | Eintrag veraltet | `updated` liegt mehr als `stale_days` (Standard 180) vor dem Stichtag `reference_date`; ohne Stichtag läuft die Regel nicht | info |
+| BC-14 | Reproduktion fehlt | Bug, dessen Beschreibung keine Schritte zum Nachstellen enthält (Muster `repro_patterns`) | warning |
+| BC-15 | Ziel fehlt | Epic, dessen Beschreibung weniger als `epic_goal_min_words` Wörter hat (Standard 5) | info |
+
+BC-13 bis BC-15 kamen nach Freigabe der ersten Version auf Wunsch dazu (12.11.2026). Ebenso diese Schärfungen:
+
+- BC-04 zählt eine Konjunktion nur, wenn direkt danach ein Verb steht (`activity_patterns`; Deutsch: kleingeschriebener Infinitiv, Englisch: Liste üblicher Verben).
+- BC-07 übergeht Nennungen von Einträgen, die vom geprüften Eintrag abhängen (Gegenrichtung).
+- BC-10 lässt Füllwörter (`similarity_stopwords`) beim Vergleich weg.
+- BC-11 rechnet Einheiten vor dem Vergleich in eine Grundeinheit um (`unit_conversions`, z. B. 2 Wochen = 14 Tage).
 
 Zu den Regeln im Einzelnen:
 
@@ -101,7 +112,11 @@ Ein Objekt mit Standardwerten; jeder Wert ist überschreibbar.
 | `duplicate_threshold` | 0,8 |
 | `done_statuses` | `done`, `closed`, `erledigt`, `abgeschlossen` |
 | `vague_words` | Wortliste je Sprache, erweiterbar |
-| `ignore` | Liste aus Regel-ID und Kennung für bewusst hingenommene Befunde |
+| `ignore` | Liste aus Regel-ID und Kennung für bewusst hingenommene Befunde; als Objekt optional mit `field` und `related`, um einen einzelnen Befund zu treffen |
+| `reference_date` | leer; Stichtag für BC-13 (`YYYY-MM-DD`) |
+| `stale_days` | 180 |
+| `epic_goal_min_words` | 5 |
+| `activity_patterns`, `similarity_stopwords`, `unit_conversions`, `repro_patterns` | Wortlisten und Muster je Sprache bzw. Umrechnungstabelle, erweiterbar |
 
 Die Kommandozeile liest die Konfiguration aus einer JSON-Datei (`--config`).
 
@@ -112,6 +127,10 @@ backlog-check backlog.csv                       # lesbarer Bericht auf Deutsch
 backlog-check backlog.json --format json        # Befunde als JSON
 backlog-check backlog.csv --lang en --config regeln.json
 backlog-check backlog.csv --map "Summary=title" --map "Issue key=id"
+backlog-check jira-export.csv --preset jira      # fertige Zuordnung für Jira (ebenso azure-devops)
+backlog-check backlog.csv --format markdown      # Bericht für Wiki-Seiten
+backlog-check backlog.csv --format sarif         # SARIF 2.1.0 für Code-Plattformen
+backlog-check backlog.csv --reference-date 2026-11-12
 ```
 
 Rückgabewert: 0 ohne Befund der Schwere `error`, 1 mit, 2 bei ungültiger Eingabe. Damit lässt sich die Prüfung in eine CI einbauen.

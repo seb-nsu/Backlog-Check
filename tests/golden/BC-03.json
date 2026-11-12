@@ -1,0 +1,170 @@
+{
+  "rule": "BC-03",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "estimate": 20,
+          "acceptance_criteria": [
+            "Ein Kriterium"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "estimate": 3,
+          "acceptance_criteria": [
+            "Kriterium 1",
+            "Kriterium 2",
+            "Kriterium 3",
+            "Kriterium 4",
+            "Kriterium 5",
+            "Kriterium 6",
+            "Kriterium 7",
+            "Kriterium 8",
+            "Kriterium 9"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-03",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "estimate",
+          "span": null,
+          "message_key": "bc03.estimate_too_large",
+          "params": {
+            "estimate": 20,
+            "max_estimate": 13
+          }
+        },
+        {
+          "rule": "BC-03",
+          "severity": "warning",
+          "item": "DE-2",
+          "related": [],
+          "field": "acceptance_criteria",
+          "span": null,
+          "message_key": "bc03.too_many_criteria",
+          "params": {
+            "count": 9,
+            "max_criteria": 8
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "estimate": 13,
+          "acceptance_criteria": [
+            "Kriterium 1",
+            "Kriterium 2",
+            "Kriterium 3",
+            "Kriterium 4",
+            "Kriterium 5",
+            "Kriterium 6",
+            "Kriterium 7",
+            "Kriterium 8"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "estimate": 40,
+          "status": "done"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "config": {
+        "max_estimate": 8,
+        "max_criteria": 2
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "estimate": 8.5,
+          "acceptance_criteria": [
+            "one",
+            "two",
+            "three"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-03",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "estimate",
+          "span": null,
+          "message_key": "bc03.estimate_too_large",
+          "params": {
+            "estimate": 8.5,
+            "max_estimate": 8
+          }
+        },
+        {
+          "rule": "BC-03",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria",
+          "span": null,
+          "message_key": "bc03.too_many_criteria",
+          "params": {
+            "count": 3,
+            "max_criteria": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "config": {
+        "max_estimate": 8,
+        "max_criteria": 2
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "estimate": 8,
+          "acceptance_criteria": [
+            "one",
+            "two"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

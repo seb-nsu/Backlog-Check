@@ -1,0 +1,94 @@
+{
+  "rule": "BC-05",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Profilbild ändern",
+          "description": "Als Nutzer möchte ich mein Profilbild ändern."
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Profilbild wird nicht gespeichert"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-05",
+          "severity": "info",
+          "item": "DE-1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc05.missing_benefit",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Profilbild ändern",
+          "description": "Als Nutzer möchte ich mein Profilbild ändern, um von Kollegen erkannt zu werden."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Profilbild ändern, damit Kollegen mich erkennen"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Change avatar",
+          "description": "As a user I want to change my avatar."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-05",
+          "severity": "info",
+          "item": "EN-1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc05.missing_benefit",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Change avatar",
+          "description": "As a user I want to change my avatar in order to be recognised."
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Change avatar so that colleagues recognise me"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

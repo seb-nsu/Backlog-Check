@@ -1,0 +1,124 @@
+{
+  "rule": "BC-01",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung herunterladen",
+          "description": "Als Kundin möchte ich die Rechnung herunterladen, damit ich sie ablegen kann."
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Absturz beim Speichern",
+          "acceptance_criteria": [
+            " ",
+            ""
+          ]
+        },
+        {
+          "id": "DE-3",
+          "kind": "epic",
+          "title": "Abrechnung"
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Alte Story",
+          "status": "erledigt"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-01",
+          "severity": "error",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria",
+          "span": null,
+          "message_key": "bc01.missing",
+          "params": {}
+        },
+        {
+          "rule": "BC-01",
+          "severity": "error",
+          "item": "DE-2",
+          "related": [],
+          "field": "acceptance_criteria",
+          "span": null,
+          "message_key": "bc01.missing",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung herunterladen",
+          "acceptance_criteria": [
+            "Die Rechnung ist als PDF abrufbar."
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "bug",
+          "title": "Crash on save",
+          "description": "Saving a draft crashes the app."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-01",
+          "severity": "error",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria",
+          "span": null,
+          "message_key": "bc01.missing",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "bug",
+          "title": "Crash on save",
+          "acceptance_criteria": [
+            "Saving a draft does not crash."
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "epic",
+          "title": "Billing"
+        },
+        {
+          "id": "EN-3",
+          "kind": "story",
+          "title": "Old story",
+          "status": "Closed"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

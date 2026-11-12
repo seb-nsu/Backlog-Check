@@ -1,0 +1,146 @@
+{
+  "rule": "BC-13",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "config": {
+        "reference_date": "2026-11-12"
+      },
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Alte Story",
+          "updated": "2026-05-15"
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Alter Bug",
+          "updated": "1.3.2025"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-13",
+          "severity": "info",
+          "item": "DE-1",
+          "related": [],
+          "field": "updated",
+          "span": null,
+          "message_key": "bc13.stale",
+          "params": {
+            "updated": "2026-05-15",
+            "days": 181,
+            "max_days": 180
+          }
+        },
+        {
+          "rule": "BC-13",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [],
+          "field": "updated",
+          "span": null,
+          "message_key": "bc13.stale",
+          "params": {
+            "updated": "2025-03-01",
+            "days": 621,
+            "max_days": 180
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "config": {
+        "reference_date": "2026-11-12"
+      },
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Story",
+          "updated": "2026-05-16"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Ohne Datum"
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Erledigt",
+          "updated": "2020-01-01",
+          "status": "erledigt"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "de-near-miss-no-reference-date",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Story",
+          "updated": "2020-01-01"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "config": {
+        "reference_date": "2026-11-12",
+        "stale_days": 30
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Story",
+          "updated": "12/Oct/26 9:15 AM"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-13",
+          "severity": "info",
+          "item": "EN-1",
+          "related": [],
+          "field": "updated",
+          "span": null,
+          "message_key": "bc13.stale",
+          "params": {
+            "updated": "2026-10-12",
+            "days": 31,
+            "max_days": 30
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "config": {
+        "reference_date": "2026-11-12",
+        "stale_days": 30
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Story",
+          "updated": "2026-10-13T08:00:00Z"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "rule": "BC-02",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "acceptance_criteria": [
+            "Die Suche liefert schnell Ergebnisse.",
+            "Export als PDF, CSV etc.",
+            "Die Maske ist möglichst einfach."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[0]",
+          "span": [
+            18,
+            25
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "schnell"
+          }
+        },
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[1]",
+          "span": [
+            20,
+            24
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "etc."
+          }
+        },
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[2]",
+          "span": [
+            14,
+            23
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "möglichst"
+          }
+        },
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[2]",
+          "span": [
+            24,
+            31
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "einfach"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "description": "Die Suche soll schnell sein.",
+          "acceptance_criteria": [
+            "Die Suche liefert schnell Ergebnisse, in unter 2 Sekunden.",
+            "Das Formular ist einfach: höchstens drei Klicks.",
+            "Die Schnellsuche ist auf jeder Seite sichtbar."
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "acceptance_criteria": [
+            "The form is Easy to use.",
+            "Loading is fast."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria[0]",
+          "span": [
+            12,
+            16
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "Easy"
+          }
+        },
+        {
+          "rule": "BC-02",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria[1]",
+          "span": [
+            11,
+            15
+          ],
+          "message_key": "bc02.unmeasurable",
+          "params": {
+            "word": "fast"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "acceptance_criteria": [
+            "Loading is fast: under 300 ms.",
+            "The breakfast menu is shown.",
+            "Signing up is easy, it takes a few clicks."
+          ]
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

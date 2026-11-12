@@ -1,0 +1,267 @@
+{
+  "rule": "BC-11",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "description": "Die Frist beträgt 5 Tage."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "acceptance_criteria": [
+            "Frist 10 Tage nach Eingang"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [
+            "DE-1"
+          ],
+          "field": "acceptance_criteria[0]",
+          "span": [
+            6,
+            13
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "term": "Frist",
+            "value": "10",
+            "unit": "Tage",
+            "other": "DE-1",
+            "other_value": "5",
+            "other_unit": "Tage"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Eintrag DE-1",
+          "description": "Die Frist beträgt 5 Tage."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Eintrag DE-2",
+          "description": "Frist von 5 Tagen."
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Eintrag DE-3",
+          "description": "Frist 10 Klicks."
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Eintrag DE-4",
+          "description": "Speicherdauer 10 Tage."
+        },
+        {
+          "id": "DE-5",
+          "kind": "story",
+          "title": "Eintrag DE-5",
+          "description": "Frist 10 Tage.",
+          "status": "done"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "description": "Deadline: 5 days after the request."
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "The deadline is 10 days."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "EN-2",
+          "related": [
+            "EN-1"
+          ],
+          "field": "title",
+          "span": [
+            16,
+            23
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "term": "deadline",
+            "value": "10",
+            "unit": "days",
+            "other": "EN-1",
+            "other_value": "5",
+            "other_unit": "days"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Eintrag EN-1",
+          "description": "Deadline: 5 days after the request."
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Eintrag EN-2",
+          "description": "The deadline is 5 days."
+        },
+        {
+          "id": "EN-3",
+          "kind": "story",
+          "title": "Eintrag EN-3",
+          "description": "Retention is 10 days."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "de-trigger-converted",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Frist 2 Wochen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Frist 10 Tage"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [
+            "DE-1"
+          ],
+          "field": "title",
+          "span": [
+            6,
+            13
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "other": "DE-1",
+            "other_unit": "Wochen",
+            "other_value": "2",
+            "term": "Frist",
+            "unit": "Tage",
+            "value": "10"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss-converted",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Frist 2 Wochen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Frist 14 Tage"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger-converted",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Timeout 1 hour"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Timeout 30 minutes"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "EN-2",
+          "related": [
+            "EN-1"
+          ],
+          "field": "title",
+          "span": [
+            8,
+            18
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "other": "EN-1",
+            "other_unit": "hour",
+            "other_value": "1",
+            "term": "Timeout",
+            "unit": "minutes",
+            "value": "30"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss-converted",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Timeout 1 hour"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Timeout 60 minutes"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}
