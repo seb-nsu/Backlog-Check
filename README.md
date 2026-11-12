@@ -64,7 +64,14 @@ backlog-check backlog.json --format json            # Befunde und Zusammenfassun
 backlog-check backlog.csv --format csv --output befunde.csv
 backlog-check backlog.csv --lang en --config regeln.json
 backlog-check export.csv --map "Summary=title" --map "Issue key=id" --map "Issue Type=kind"
+backlog-check jira-export.csv --preset jira          # fertige Zuordnung für Jira
+backlog-check azure-export.csv --preset azure-devops # fertige Zuordnung für Azure DevOps
+backlog-check backlog.csv --format markdown          # Bericht für Wiki-Seiten
+backlog-check backlog.csv --format sarif             # SARIF 2.1.0 für Code-Plattformen
+backlog-check backlog.csv --reference-date 2026-11-12  # Stichtag für BC-13
 ```
+
+Die Presets übernehmen Kennung, Art, Titel, Beschreibung, Akzeptanzkriterien, Schätzung, Status, Epic und (Jira) das Änderungsdatum. Priorität, Rang und Verknüpfungen passen nicht ins Eingabeformat und werden nicht übernommen; bei Bedarf mit `--map` ergänzen. Tasks gelten als Story, Azure-DevOps-Features als Epic.
 
 Rückgabewert: `0` ohne Befund der Schwere `error`, `1` mit, `2` bei ungültiger Eingabe oder Konfiguration (mit Zeilenangabe).
 
@@ -118,11 +125,19 @@ Eine JSON-Datei (`--config`); jeder Wert ist optional:
   "duplicate_threshold": 0.8,
   "done_statuses": ["done", "closed", "erledigt", "abgeschlossen"],
   "vague_words": {"de": ["schnell", "einfach", "benutzerfreundlich", "möglichst", "etc.", "fast"]},
-  "ignore": [["BC-02", "S-1"]]
+  "reference_date": "2026-11-12",
+  "stale_days": 180,
+  "epic_goal_min_words": 5,
+  "ignore": [
+    ["BC-02", "S-1"],
+    {"rule": "BC-02", "item": "S-2", "field": "acceptance_criteria[1]"}
+  ]
 }
 ```
 
-`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `benefit_patterns`, `conjunctions`, `units`, `term_stopwords` (je Sprache) und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
+Ein Eintrag in `ignore` als Liste unterdrückt alle Befunde der Regel am Eintrag; als Objekt mit `field` oder `related` genau einen.
+
+`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
 
 ---
 
@@ -144,6 +159,10 @@ pip install "git+https://github.com/seb-nsu/Backlog-Check@v0.1.0"
 backlog-check backlog.csv --lang en                 # readable report in English
 backlog-check backlog.json --format json            # findings and summary as JSON
 backlog-check export.csv --map "Summary=title" --map "Issue key=id"
+backlog-check jira-export.csv --preset jira         # ready-made mapping (also azure-devops)
+backlog-check backlog.csv --format markdown         # report for wiki pages
+backlog-check backlog.csv --format sarif            # SARIF 2.1.0 for code platforms
+backlog-check backlog.csv --reference-date 2026-11-12  # reference date for BC-13
 ```
 
 Exit code: `0` without a finding of severity `error`, `1` with one, `2` for invalid input or configuration (with line number).
@@ -156,7 +175,7 @@ for finding in check(items, {"language": "en"}):
     print(finding.item, finding.rule, render(finding.message_key, finding.params, "en"))
 ```
 
-Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `description`, `acceptance_criteria`, `estimate`, `priority` (`must`, `should`, `could`, `wont`), `rank`, `status`, `depends_on` and `parent` are optional. Findings carry `rule`, `severity`, `item`, `related`, `field`, `span`, `message_key` and `params` but never a finished sentence.
+Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `description`, `acceptance_criteria`, `estimate`, `priority` (`must`, `should`, `could`, `wont`), `rank`, `status`, `depends_on`, `parent` and `updated` (date) are optional. Findings carry `rule`, `severity`, `item`, `related`, `field`, `span`, `message_key` and `params` but never a finished sentence.
 
 ### Rules
 
@@ -178,7 +197,7 @@ Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `d
 | BC-14 | Steps to reproduce missing | Bug without steps to reproduce in its description | warning |
 | BC-15 | Goal missing | Epic with fewer than 5 words of description | info |
 
-Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages.
+Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages. An `ignore` entry given as an object with `field` or `related` suppresses exactly one finding.
 
 ## Lizenz / License
 
