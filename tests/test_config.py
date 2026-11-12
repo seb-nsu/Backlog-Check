@@ -1,7 +1,7 @@
 import pytest
 
 from backlog_check import Config, ConfigError
-from backlog_check.config import DEFAULT_SEVERITY, RuleSettings
+from backlog_check.config import DEFAULT_SEVERITY, IgnoreEntry, RuleSettings
 
 
 def _error(data) -> ConfigError:
@@ -40,7 +40,10 @@ def test_overrides():
             "conjunctions": {"de": ["sowie"]},
             "units": {"en": {"Pages": "page"}},
             "term_stopwords": {"en": ["the"]},
-            "ignore": [["BC-01", "A"], {"rule": "BC-02", "item": "B"}],
+            "ignore": [
+                ["BC-01", "A"],
+                {"rule": "BC-02", "item": "B", "field": "acceptance_criteria[1]", "related": "C"},
+            ],
             "list_separator": ";",
         }
     )
@@ -51,7 +54,10 @@ def test_overrides():
     assert config.vague_words == {"de": ("zügig",), "en": ("fast", "easy", "user-friendly", "etc.")}
     assert config.units["en"] == {"pages": "page"}
     assert "tage" in config.units["de"]
-    assert config.ignore == (("BC-01", "A"), ("BC-02", "B"))
+    assert config.ignore == (
+        IgnoreEntry("BC-01", "A"),
+        IgnoreEntry("BC-02", "B", "acceptance_criteria[1]", "C"),
+    )
     assert config.is_done(" Fertig ")
     assert not config.is_done("done")
     assert not config.is_done(None)
@@ -87,6 +93,9 @@ def test_overrides():
         ({"ignore": [["BC-01"]]}, "config.invalid_value"),
         ({"ignore": [["BC-99", "A"]]}, "config.invalid_value"),
         ({"ignore": [["BC-01", 1]]}, "config.invalid_value"),
+        ({"ignore": [{"rule": "BC-01"}]}, "config.invalid_value"),
+        ({"ignore": [{"rule": "BC-01", "item": "A", "span": 1}]}, "config.invalid_value"),
+        ({"ignore": [{"rule": "BC-01", "item": "A", "field": 1}]}, "config.invalid_value"),
         ({"list_separator": ""}, "config.invalid_value"),
         ({"unit_conversions": []}, "config.invalid_value"),
         ({"unit_conversions": {"d": ["s"]}}, "config.invalid_value"),

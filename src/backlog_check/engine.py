@@ -23,13 +23,12 @@ def check(
     """
     cfg = config if isinstance(config, Config) else Config.from_dict(config)
     ctx = Context(to_items(items), cfg)
-    ignored = set(cfg.ignore)
     findings = [
         finding
         for rule_id, rule in RULES.items()
         if cfg.rules[rule_id].enabled
         for finding in rule(ctx)
-        if (finding.rule, finding.item) not in ignored
+        if not any(entry.matches(finding) for entry in cfg.ignore)
     ]
     findings.sort(key=lambda f: (ctx.position[f.item], f.rule))
     return findings

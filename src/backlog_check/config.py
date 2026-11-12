@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .errors import ConfigError
-from .model import RULE_IDS, SEVERITIES
+from .model import RULE_IDS, SEVERITIES, Finding
 
 LANGUAGES = ("de", "en")
 LANGUAGE_SETTINGS = ("de", "en", "auto")
@@ -197,6 +197,27 @@ DEFAULT_SIMILARITY_STOPWORDS: dict[str, list[str]] = {
 DEFAULT_DONE_STATUSES = ("done", "closed", "erledigt", "abgeschlossen")
 
 
+IGNORE_KEYS = {"rule", "item", "field", "related"}
+
+
+@dataclass(frozen=True)
+class IgnoreEntry:
+    """A deliberately accepted finding. ``field`` and ``related`` narrow it to one finding."""
+
+    rule: str
+    item: str
+    field: str | None = None
+    related: str | None = None
+
+    def matches(self, finding: Finding) -> bool:
+        return (
+            finding.rule == self.rule
+            and finding.item == self.item
+            and (self.field is None or finding.field == self.field)
+            and (self.related is None or self.related in finding.related)
+        )
+
+
 @dataclass(frozen=True)
 class RuleSettings:
     enabled: bool
@@ -240,7 +261,7 @@ class Config:
     similarity_stopwords: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_SIMILARITY_STOPWORDS)
     )
-    ignore: tuple[tuple[str, str], ...] = ()
+    ignore: tuple[IgnoreEntry, ...] = ()
     list_separator: str | None = None
 
     @classmethod
@@ -376,20 +397,25 @@ def _parse_unit_conversions(value: Any) -> dict[str, tuple[str, float]]:
     return result
 
 
-def _parse_ignore(value: Any) -> tuple[tuple[str, str], ...]:
+def _parse_ignore(value: Any) -> tuple[IgnoreEntry, ...]:
     if not isinstance(value, list):
         raise _invalid("ignore", value)
     result = []
     for entry in value:
-        if isinstance(entry, Mapping) and set(entry) == {"rule", "item"}:
-            pair = (entry["rule"], entry["item"])
+        if isinstance(entry, Mapping) and {"rule", "item"} <= set(entry) <= IGNORE_KEYS:
+            parts = dict(entry)
         elif isinstance(entry, list) and len(entry) == 2:
-            pair = (entry[0], entry[1])
+            parts = {"rule": entry[0], "item": entry[1]}
         else:
             raise _invalid("ignore", entry)
-        if pair[0] not in RULE_IDS or not isinstance(pair[1], str):
+        optional = [parts.get("field"), parts.get("related")]
+        if (
+            parts["rule"] not in RULE_IDS
+            or not isinstance(parts["item"], str)
+            or not all(v is None or isinstance(v, str) for v in optional)
+        ):
             raise _invalid("ignore", entry)
-        result.append(pair)
+        result.append(IgnoreEntry(**parts))
     return tuple(result)
 
 

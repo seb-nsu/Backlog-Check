@@ -67,3 +67,24 @@ def test_same_input_gives_byte_identical_output():
         return json.dumps([f.to_dict() for f in check(ITEMS, {"language": "auto"})]).encode()
 
     assert run() == run()
+
+
+def test_ignore_with_field_suppresses_one_of_several_findings():
+    items = [
+        {
+            "id": "B-1",
+            "kind": "story",
+            "title": "Suche, damit ich finde",
+            "acceptance_criteria": ["Die Suche ist schnell.", "Die Maske ist einfach."],
+        },
+        {"id": "B-2", "kind": "story", "title": "Hängt an B-1 und B-3"},
+        {"id": "B-3", "kind": "story", "title": "Drei"},
+    ]
+    only = {"rules": {r: {"enabled": r in ("BC-02", "BC-07")} for r in RULE_IDS}}
+    before = check(items, only)
+    entry = {"rule": "BC-02", "item": "B-1", "field": "acceptance_criteria[1]"}
+    after = check(items, {**only, "ignore": [entry]})
+    assert [f for f in before if f not in after] == [before[1]]
+    entry = {"rule": "BC-07", "item": "B-2", "related": "B-3"}
+    after = check(items, {**only, "ignore": [entry]})
+    assert [f.related for f in before if f not in after] == [("B-3",)]
