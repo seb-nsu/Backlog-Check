@@ -1,4 +1,4 @@
-"""backlog-check: checks a backlog against fixed, traceable rules (BC-01 to BC-12)."""
+"""backlog-check: checks a backlog against fixed, traceable rules (BC-01 to BC-15)."""
 
 from .catalog import render
 from .config import Config

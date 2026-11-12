@@ -1,0 +1,111 @@
+{
+  "rule": "BC-14",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "bug",
+          "title": "Absturz beim Speichern",
+          "description": "Beim Speichern stürzt die App ab."
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Falsches Datum"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-14",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc14.missing_repro_steps",
+          "params": {}
+        },
+        {
+          "rule": "BC-14",
+          "severity": "warning",
+          "item": "DE-2",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc14.missing_repro_steps",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "bug",
+          "title": "Absturz",
+          "description": "Schritte: Entwurf öffnen, Speichern drücken."
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Absturz",
+          "description": "So lässt es sich nachstellen:\n1. Entwurf öffnen\n2. Speichern"
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Story ohne Schritte"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "bug",
+          "title": "Crash on save",
+          "description": "The app crashes on save."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-14",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc14.missing_repro_steps",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "bug",
+          "title": "Crash on save",
+          "description": "Steps to reproduce: open a draft, press save."
+        },
+        {
+          "id": "EN-2",
+          "kind": "bug",
+          "title": "Crash",
+          "description": "Repro:\n1. Open a draft\n2. Save"
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

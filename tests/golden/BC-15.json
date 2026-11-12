@@ -1,0 +1,120 @@
+{
+  "rule": "BC-15",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-E1",
+          "kind": "epic",
+          "title": "Abrechnung"
+        },
+        {
+          "id": "DE-E2",
+          "kind": "epic",
+          "title": "Profil",
+          "description": "Profil verbessern, irgendwie."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-15",
+          "severity": "info",
+          "item": "DE-E1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc15.missing_goal",
+          "params": {
+            "words": 0,
+            "min_words": 5
+          }
+        },
+        {
+          "rule": "BC-15",
+          "severity": "info",
+          "item": "DE-E2",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc15.missing_goal",
+          "params": {
+            "words": 3,
+            "min_words": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-E1",
+          "kind": "epic",
+          "title": "Abrechnung",
+          "description": "Kunden laden Rechnungen selbst herunter."
+        },
+        {
+          "id": "DE-E2",
+          "kind": "epic",
+          "title": "Alt",
+          "status": "done"
+        },
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Story ohne Beschreibung"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "config": {
+        "epic_goal_min_words": 3
+      },
+      "items": [
+        {
+          "id": "EN-E1",
+          "kind": "epic",
+          "title": "Billing",
+          "description": "Improve billing"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-15",
+          "severity": "info",
+          "item": "EN-E1",
+          "related": [],
+          "field": "description",
+          "span": null,
+          "message_key": "bc15.missing_goal",
+          "params": {
+            "words": 2,
+            "min_words": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "config": {
+        "epic_goal_min_words": 3
+      },
+      "items": [
+        {
+          "id": "EN-E1",
+          "kind": "epic",
+          "title": "Billing",
+          "description": "Customers download invoices."
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

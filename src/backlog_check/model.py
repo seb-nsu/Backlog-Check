@@ -8,7 +8,7 @@ from typing import Any
 KINDS = ("epic", "story", "bug")
 PRIORITIES = ("must", "should", "could", "wont")
 SEVERITIES = ("info", "warning", "error")
-RULE_IDS = tuple(f"BC-{n:02d}" for n in range(1, 13))
+RULE_IDS = tuple(f"BC-{n:02d}" for n in range(1, 16))
 
 
 @dataclass(frozen=True)
@@ -26,6 +26,7 @@ class Item:
     status: str | None = None
     depends_on: tuple[str, ...] = ()
     parent: str | None = None
+    updated: str | None = None  # last change as ISO date YYYY-MM-DD
 
 
 @dataclass(frozen=True)

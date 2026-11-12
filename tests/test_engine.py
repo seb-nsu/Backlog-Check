@@ -4,7 +4,7 @@ from backlog_check.model import Finding, Item
 
 
 def test_check_accepts_mappings_and_config_objects():
-    rules = {f"BC-{n:02d}": {"enabled": False} for n in range(1, 13)}
+    rules = {f"BC-{n:02d}": {"enabled": False} for n in range(1, 16)}
     assert check([{"id": "A", "kind": "epic", "title": "T"}], {"rules": rules}) == []
     assert check([], Config()) == []
 

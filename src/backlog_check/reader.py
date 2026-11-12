@@ -6,6 +6,7 @@ Invalid input raises :class:`InputError` with the line of the offending entry.
 from __future__ import annotations
 
 import csv
+import datetime
 import io
 import json
 import re
@@ -28,6 +29,7 @@ FIELDS = (
     "status",
     "depends_on",
     "parent",
+    "updated",
 )
 REQUIRED = ("id", "kind", "title")
 LIST_FIELDS = ("acceptance_criteria", "depends_on")
@@ -75,7 +77,40 @@ def item_from_mapping(record: Any, line: int) -> Item:
         status=_optional_text(record, "status", line),
         depends_on=_text_list(record, "depends_on", line),
         parent=_optional_text(record, "parent", line),
+        updated=_date(_optional_text(record, "updated", line), line),
     )
+
+
+MONTHS = ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+DATE_FORMATS = (
+    # ISO 8601, optionally with time: 2026-11-12, 2026-11-12T10:00:00Z
+    (re.compile(r"(\d{4})-(\d{2})-(\d{2})(?:[T ].*)?"), (1, 2, 3)),
+    # German: 12.11.2026, optionally with time
+    (re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})(?: .*)?"), (3, 2, 1)),
+)
+JIRA_DATE = re.compile(r"(\d{1,2})/([A-Za-z]{3})/(\d{2})(?: .*)?")
+
+
+def _date(value: str | None, line: int) -> str | None:
+    """Normalise a date to ISO ``YYYY-MM-DD``; accepts ISO, German and Jira's default format."""
+    if value is None:
+        return None
+    parts: tuple[int, int, int] | None = None
+    for pattern, (year, month, day) in DATE_FORMATS:
+        match = pattern.fullmatch(value)
+        if match:
+            parts = (int(match.group(year)), int(match.group(month)), int(match.group(day)))
+            break
+    else:
+        match = JIRA_DATE.fullmatch(value)
+        if match and match.group(2).casefold() in MONTHS:
+            month = MONTHS.index(match.group(2).casefold()) + 1
+            # ASSUMPTION: two-digit years in Jira dates are in 2000-2099.
+            parts = (2000 + int(match.group(3)), month, int(match.group(1)))
+    try:
+        return datetime.date(*parts).isoformat()  # type: ignore[misc]
+    except (TypeError, ValueError):
+        raise _invalid("updated", value, line) from None
 
 
 def _invalid(field: str, value: Any, line: int) -> InputError:

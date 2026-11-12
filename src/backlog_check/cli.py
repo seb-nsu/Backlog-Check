@@ -45,7 +45,7 @@ LIST_INDEX = re.compile(r"^(\w+)\[(\d+)\]$")
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="backlog-check", description="Check a backlog against the rules BC-01 to BC-12."
+        prog="backlog-check", description="Check a backlog against the rules BC-01 to BC-15."
     )
     parser.add_argument("file", help="backlog as .csv or .json")
     parser.add_argument("--format", choices=FORMATS, default="text", help="output format")

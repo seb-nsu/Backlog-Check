@@ -1,6 +1,32 @@
 {
   "findings": [
     {
+      "rule": "BC-15",
+      "severity": "info",
+      "item": "BIB-2",
+      "related": [],
+      "field": "description",
+      "span": null,
+      "message_key": "bc15.missing_goal",
+      "params": {
+        "min_words": 5,
+        "words": 4
+      }
+    },
+    {
+      "rule": "BC-15",
+      "severity": "info",
+      "item": "BIB-5",
+      "related": [],
+      "field": "description",
+      "span": null,
+      "message_key": "bc15.missing_goal",
+      "params": {
+        "min_words": 5,
+        "words": 3
+      }
+    },
+    {
       "rule": "BC-08",
       "severity": "warning",
       "item": "BIB-10",
@@ -29,6 +55,20 @@
       "message_key": "bc02.unmeasurable",
       "params": {
         "word": "einfach"
+      }
+    },
+    {
+      "rule": "BC-13",
+      "severity": "info",
+      "item": "BIB-12",
+      "related": [],
+      "field": "updated",
+      "span": null,
+      "message_key": "bc13.stale",
+      "params": {
+        "days": 255,
+        "max_days": 180,
+        "updated": "2026-03-02"
       }
     },
     {
@@ -376,6 +416,30 @@
       "params": {}
     },
     {
+      "rule": "BC-13",
+      "severity": "info",
+      "item": "BIB-44",
+      "related": [],
+      "field": "updated",
+      "span": null,
+      "message_key": "bc13.stale",
+      "params": {
+        "days": 408,
+        "max_days": 180,
+        "updated": "2025-09-30"
+      }
+    },
+    {
+      "rule": "BC-14",
+      "severity": "warning",
+      "item": "BIB-50",
+      "related": [],
+      "field": "description",
+      "span": null,
+      "message_key": "bc14.missing_repro_steps",
+      "params": {}
+    },
+    {
       "rule": "BC-01",
       "severity": "error",
       "item": "BIB-51",
@@ -403,6 +467,16 @@
       }
     },
     {
+      "rule": "BC-14",
+      "severity": "warning",
+      "item": "BIB-52",
+      "related": [],
+      "field": "description",
+      "span": null,
+      "message_key": "bc14.missing_repro_steps",
+      "params": {}
+    },
+    {
       "rule": "BC-08",
       "severity": "warning",
       "item": "BIB-53",
@@ -417,6 +491,16 @@
         "dependency_priority": "could",
         "priority": "should"
       }
+    },
+    {
+      "rule": "BC-14",
+      "severity": "warning",
+      "item": "BIB-53",
+      "related": [],
+      "field": "description",
+      "span": null,
+      "message_key": "bc14.missing_repro_steps",
+      "params": {}
     },
     {
       "rule": "BC-01",
@@ -462,10 +546,10 @@
   "summary": {
     "items": 41,
     "checked": 40,
-    "findings": 32,
+    "findings": 39,
     "by_severity": {
-      "info": 14,
-      "warning": 14,
+      "info": 18,
+      "warning": 17,
       "error": 4
     },
     "by_rule": {
@@ -503,6 +587,15 @@
         "info": 4
       },
       "BC-12": {
+        "info": 2
+      },
+      "BC-13": {
+        "info": 2
+      },
+      "BC-14": {
+        "warning": 3
+      },
+      "BC-15": {
         "info": 2
       }
     },

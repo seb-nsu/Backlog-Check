@@ -98,6 +98,9 @@ print(summarize(items, findings))
 | BC-10 | Mögliche Dublette | Ähnlichkeit von Titel und Beschreibung über 0,8 | info |
 | BC-11 | Widersprüchliche Werte | Zwei Einträge nennen für denselben Begriff unterschiedliche Zahlen mit Einheit | info |
 | BC-12 | Struktur unvollständig | Epic ohne Stories oder Story ohne Epic, wenn es Epics gibt | info |
+| BC-13 | Eintrag veraltet | `updated` liegt mehr als 180 Tage vor dem Stichtag `reference_date` (nur mit Stichtag) | info |
+| BC-14 | Reproduktion fehlt | Bug ohne Schritte zum Nachstellen in der Beschreibung | warning |
+| BC-15 | Ziel fehlt | Epic mit weniger als 5 Wörtern Beschreibung | info |
 
 Erledigte Einträge (`done`, `closed`, `erledigt`, `abgeschlossen`) werden nicht geprüft, zählen aber als Ziel von Abhängigkeiten.
 
@@ -171,6 +174,9 @@ Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `d
 | BC-10 | Possible duplicate | Similarity of title and description above 0.8 | info |
 | BC-11 | Conflicting values | Two items give different numbers with a unit for the same term | info |
 | BC-12 | Incomplete structure | Epic without stories, or story without an epic if the backlog has epics | info |
+| BC-13 | Item stale | `updated` is more than 180 days before the reference date `reference_date` (only with a reference date) | info |
+| BC-14 | Steps to reproduce missing | Bug without steps to reproduce in its description | warning |
+| BC-15 | Goal missing | Epic with fewer than 5 words of description | info |
 
 Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages.
 

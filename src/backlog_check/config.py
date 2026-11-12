@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -26,6 +27,9 @@ DEFAULT_SEVERITY: dict[str, str] = {
     "BC-10": "info",
     "BC-11": "info",
     "BC-12": "info",
+    "BC-13": "info",
+    "BC-14": "warning",
+    "BC-15": "info",
 }
 
 # Text heuristics of BC-10 and BC-11 may not be raised above warning (KONZEPT.md).
@@ -194,6 +198,12 @@ DEFAULT_SIMILARITY_STOPWORDS: dict[str, list[str]] = {
     ],
 }  # fmt: skip
 
+# BC-14: a bug description that matches none of these has no steps to reproduce.
+DEFAULT_REPRO_PATTERNS: dict[str, list[str]] = {
+    "de": [r"\bschritte?\b", r"reproduz", r"nachstell", r"(?m)^\s*1[.)]\s"],
+    "en": [r"\bsteps?\b", r"\brepro", r"(?m)^\s*1[.)]\s"],
+}
+
 DEFAULT_DONE_STATUSES = ("done", "closed", "erledigt", "abgeschlossen")
 
 
@@ -261,6 +271,12 @@ class Config:
     similarity_stopwords: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_SIMILARITY_STOPWORDS)
     )
+    repro_patterns: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: _freeze_lists(DEFAULT_REPRO_PATTERNS)
+    )
+    reference_date: str | None = None
+    stale_days: int = 180
+    epic_goal_min_words: int = 5
     ignore: tuple[IgnoreEntry, ...] = ()
     list_separator: str | None = None
 
@@ -419,6 +435,16 @@ def _parse_ignore(value: Any) -> tuple[IgnoreEntry, ...]:
     return tuple(result)
 
 
+def _parse_reference_date(value: Any) -> str | None:
+    # No clock is read: BC-13 only runs when the caller states the reference date.
+    if value is None:
+        return None
+    try:
+        return datetime.date.fromisoformat(value).isoformat()
+    except (TypeError, ValueError):
+        raise _invalid("reference_date", value) from None
+
+
 def _parse_separator(value: Any) -> str | None:
     if value is not None and not (isinstance(value, str) and value):
         raise _invalid("list_separator", value)
@@ -441,6 +467,10 @@ _PARSERS = {
     "unit_conversions": _parse_unit_conversions,
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
     "similarity_stopwords": _per_language("similarity_stopwords", DEFAULT_SIMILARITY_STOPWORDS),
+    "repro_patterns": _per_language("repro_patterns", DEFAULT_REPRO_PATTERNS, True),
+    "reference_date": _parse_reference_date,
+    "stale_days": _number("stale_days", 0, integer=True),
+    "epic_goal_min_words": _number("epic_goal_min_words", 0, integer=True),
     "ignore": _parse_ignore,
     "list_separator": _parse_separator,
 }

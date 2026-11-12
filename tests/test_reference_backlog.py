@@ -7,13 +7,17 @@ from pathlib import Path
 
 from backlog_check import check, load_file
 from backlog_check.cli import main
+from backlog_check.model import RULE_IDS
 
 DATA = Path(__file__).parent / "data"
 
 
 def _cli_json(path: Path) -> str:
     out = io.StringIO()
-    main([str(path), "--format", "json"], stdout=out)
+    main(
+        [str(path), "--format", "json", "--config", str(DATA / "referenz-konfiguration.json")],
+        stdout=out,
+    )
     return out.getvalue()
 
 
@@ -28,7 +32,7 @@ def test_reference_backlog_csv_gives_same_output_as_json():
 
 def test_reference_backlog_triggers_every_rule():
     findings = json.loads((DATA / "referenz-erwartung.json").read_text(encoding="utf-8"))
-    assert len(findings["summary"]["by_rule"]) == 12
+    assert list(findings["summary"]["by_rule"]) == list(RULE_IDS)
 
 
 def _thousand_items():

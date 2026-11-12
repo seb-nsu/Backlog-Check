@@ -286,3 +286,29 @@ def test_to_items_accepts_items_and_mappings():
 
 def test_error_string_contains_key():
     assert "input.empty" in str(_error(load_csv, " "))
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        ("2026-11-12", "2026-11-12"),
+        ("2026-11-12T10:00:00Z", "2026-11-12"),
+        ("1.3.2025", "2025-03-01"),
+        ("01.03.2025 14:00", "2025-03-01"),
+        ("12/Nov/26 1:06 PM", "2026-11-12"),
+        ("", None),
+    ],
+)
+def test_updated_dates(value, expected):
+    (item,) = load_csv(f"id,kind,title,updated\nA,story,T,{value}\n")
+    assert item.updated == expected
+
+
+@pytest.mark.parametrize("value", ["2026-13-01", "31.02.2026", "12/Foo/26", "gestern"])
+def test_invalid_updated_dates(value):
+    error = _error(load_csv, f"id,kind,title,updated\nA,story,T,{value}\n")
+    assert (error.message_key, error.params["field"], error.line) == (
+        "input.invalid_value",
+        "updated",
+        2,
+    )

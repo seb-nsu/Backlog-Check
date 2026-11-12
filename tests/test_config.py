@@ -70,7 +70,7 @@ def test_overrides():
         ({"colour": 1}, "config.unknown_key"),
         ({"language": "fr"}, "config.invalid_value"),
         ({"rules": []}, "config.invalid_value"),
-        ({"rules": {"BC-13": {}}}, "config.unknown_rule"),
+        ({"rules": {"BC-16": {}}}, "config.unknown_rule"),
         ({"rules": {"BC-01": True}}, "config.invalid_value"),
         ({"rules": {"BC-01": {"enable": True}}}, "config.invalid_value"),
         ({"rules": {"BC-01": {"enabled": "yes"}}}, "config.invalid_value"),
@@ -98,6 +98,10 @@ def test_overrides():
         ({"ignore": [{"rule": "BC-01", "item": "A", "field": 1}]}, "config.invalid_value"),
         ({"list_separator": ""}, "config.invalid_value"),
         ({"unit_conversions": []}, "config.invalid_value"),
+        ({"reference_date": "12.11.2026"}, "config.invalid_value"),
+        ({"reference_date": 20261112}, "config.invalid_value"),
+        ({"stale_days": -1}, "config.invalid_value"),
+        ({"epic_goal_min_words": 1.5}, "config.invalid_value"),
         ({"unit_conversions": {"d": ["s"]}}, "config.invalid_value"),
         ({"unit_conversions": {"d": ["s", 0]}}, "config.invalid_value"),
         ({"unit_conversions": {"d": ["", 1]}}, "config.invalid_value"),
@@ -111,6 +115,11 @@ def test_invalid(data, key):
 def test_unit_conversions_replace_defaults():
     config = Config.from_dict({"unit_conversions": {"week": ["d", 7]}})
     assert config.unit_conversions == {"week": ("d", 7)}
+
+
+def test_reference_date():
+    assert Config.from_dict({"reference_date": "2026-11-12"}).reference_date == "2026-11-12"
+    assert Config.from_dict({"reference_date": None}).reference_date is None
 
 
 def test_list_separator_none_is_default():

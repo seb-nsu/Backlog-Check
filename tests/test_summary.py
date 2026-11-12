@@ -37,4 +37,4 @@ def test_summary_without_stories():
     summary = summarize(items, check(items), {"done_statuses": ["x"]})
     assert summary["stories"] == 0
     assert summary["ready_ratio"] is None
-    assert summary["by_rule"] == {"BC-12": {"info": 1}}
+    assert summary["by_rule"] == {"BC-12": {"info": 1}, "BC-15": {"info": 1}}
