@@ -1,36 +1,6 @@
 {
   "findings": [
     {
-      "rule": "BC-04",
-      "severity": "info",
-      "item": "BIB-2",
-      "related": [],
-      "field": "title",
-      "span": [
-        6,
-        9
-      ],
-      "message_key": "bc04.multiple_concerns",
-      "params": {
-        "word": "und"
-      }
-    },
-    {
-      "rule": "BC-04",
-      "severity": "info",
-      "item": "BIB-3",
-      "related": [],
-      "field": "title",
-      "span": [
-        8,
-        11
-      ],
-      "message_key": "bc04.multiple_concerns",
-      "params": {
-        "word": "und"
-      }
-    },
-    {
       "rule": "BC-08",
       "severity": "warning",
       "item": "BIB-10",
@@ -80,21 +50,6 @@
       "span": null,
       "message_key": "bc01.missing",
       "params": {}
-    },
-    {
-      "rule": "BC-04",
-      "severity": "info",
-      "item": "BIB-15",
-      "related": [],
-      "field": "title",
-      "span": [
-        9,
-        12
-      ],
-      "message_key": "bc04.multiple_concerns",
-      "params": {
-        "word": "und"
-      }
     },
     {
       "rule": "BC-04",
@@ -159,21 +114,6 @@
       "message_key": "bc02.unmeasurable",
       "params": {
         "word": "schnell"
-      }
-    },
-    {
-      "rule": "BC-04",
-      "severity": "info",
-      "item": "BIB-20",
-      "related": [],
-      "field": "description",
-      "span": [
-        39,
-        42
-      ],
-      "message_key": "bc04.multiple_concerns",
-      "params": {
-        "word": "und"
       }
     },
     {
@@ -315,21 +255,6 @@
           "BIB-26",
           "BIB-27"
         ]
-      }
-    },
-    {
-      "rule": "BC-04",
-      "severity": "info",
-      "item": "BIB-30",
-      "related": [],
-      "field": "description",
-      "span": [
-        52,
-        55
-      ],
-      "message_key": "bc04.multiple_concerns",
-      "params": {
-        "word": "und"
       }
     },
     {
@@ -537,9 +462,9 @@
   "summary": {
     "items": 41,
     "checked": 40,
-    "findings": 37,
+    "findings": 32,
     "by_severity": {
-      "info": 19,
+      "info": 14,
       "warning": 14,
       "error": 4
     },
@@ -554,7 +479,7 @@
         "warning": 2
       },
       "BC-04": {
-        "info": 7
+        "info": 2
       },
       "BC-05": {
         "info": 5

@@ -108,6 +108,37 @@
         }
       ],
       "expected": []
+    },
+    {
+      "name": "de-near-miss-nouns",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnungen und Gutschriften anzeigen",
+          "description": "Als Buchhalterin möchte ich Belege und Rechnungen sehen, damit ich prüfen kann."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Export und"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-near-miss-nouns",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Show invoices and credit notes",
+          "description": "As an accountant I want to see invoices and receipts so that I can check them."
+        }
+      ],
+      "expected": []
     }
   ]
 }

@@ -17,13 +17,13 @@ def test_bc04_one_finding_per_field():
             {
                 "id": "A",
                 "kind": "story",
-                "title": "Lesen und Schreiben und Rechnen",
-                "description": "Ohne Nutzen. Damit es klappt. Damit A und B und C.",
+                "title": "lesen und schreiben und rechnen",
+                "description": "Ohne Nutzen. Damit es klappt. Damit A und B lesen und rechnen.",
             }
         ],
     }
     found = run_golden(RULE, case)
     assert [(f["field"], f["span"]) for f in found] == [
         ("title", [6, 9]),
-        ("description", [38, 41]),
+        ("description", [50, 53]),
     ]

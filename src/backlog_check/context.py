@@ -42,6 +42,9 @@ class Context:
             for p in _merge(config.benefit_patterns[lang] for lang in languages)
         ]
         self.conjunctions = _merge(config.conjunctions[lang] for lang in languages)
+        self.activity_patterns = [
+            re.compile(p) for p in _merge(config.activity_patterns[lang] for lang in languages)
+        ]
         self.units: dict[str, str] = {}
         for lang in languages:
             for spelling, unit in config.units[lang].items():

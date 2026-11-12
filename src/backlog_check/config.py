@@ -44,6 +44,21 @@ DEFAULT_BENEFIT_PATTERNS: dict[str, list[str]] = {
 
 DEFAULT_CONJUNCTIONS: dict[str, list[str]] = {"de": ["und"], "en": ["and"]}
 
+# BC-04: the word right after a conjunction must fully match one of these regular expressions
+# for the conjunction to join two activities. German verbs in user stories are lower-case
+# infinitives; English verbs come from a list of common backlog verbs.
+DEFAULT_ACTIVITY_PATTERNS: dict[str, list[str]] = {
+    "de": [r"[a-zäöüß]+(?:en|ern|eln)"],
+    "en": [
+        r"(?i:add|approve|archive|assign|book|borrow|calculate|cancel|change|check|close|"
+        r"configure|connect|copy|create|delete|display|download|edit|enter|export|filter|"
+        r"generate|import|invite|list|load|log|manage|merge|move|notify|open|pay|print|"
+        r"publish|read|register|reject|remove|renew|reserve|reset|restore|return|review|save|"
+        r"schedule|search|select|send|share|show|sign|sort|split|submit|sync|track|update|"
+        r"upload|validate|verify|view|write)(?:s|es|ed|d|ing)?"
+    ],
+}
+
 # Unit spelling -> canonical unit. Used by BC-02 (unit present?) and BC-11 (same unit?).
 DEFAULT_UNITS: dict[str, dict[str, str]] = {
     "de": {
@@ -181,6 +196,9 @@ class Config:
     )
     conjunctions: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_CONJUNCTIONS)
+    )
+    activity_patterns: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: _freeze_lists(DEFAULT_ACTIVITY_PATTERNS)
     )
     units: Mapping[str, Mapping[str, str]] = field(
         default_factory=lambda: {lang: dict(units) for lang, units in DEFAULT_UNITS.items()}
@@ -337,6 +355,7 @@ _PARSERS = {
     "vague_words": _per_language("vague_words", DEFAULT_VAGUE_WORDS),
     "benefit_patterns": _per_language("benefit_patterns", DEFAULT_BENEFIT_PATTERNS, True),
     "conjunctions": _per_language("conjunctions", DEFAULT_CONJUNCTIONS),
+    "activity_patterns": _per_language("activity_patterns", DEFAULT_ACTIVITY_PATTERNS, True),
     "units": _parse_units,
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
     "ignore": _parse_ignore,
