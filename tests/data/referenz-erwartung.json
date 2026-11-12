@@ -195,23 +195,6 @@
       }
     },
     {
-      "rule": "BC-07",
-      "severity": "warning",
-      "item": "BIB-22",
-      "related": [
-        "BIB-21"
-      ],
-      "field": "description",
-      "span": [
-        49,
-        55
-      ],
-      "message_key": "bc07.hidden_dependency",
-      "params": {
-        "id": "BIB-21"
-      }
-    },
-    {
       "rule": "BC-02",
       "severity": "warning",
       "item": "BIB-23",
@@ -554,10 +537,10 @@
   "summary": {
     "items": 41,
     "checked": 40,
-    "findings": 38,
+    "findings": 37,
     "by_severity": {
       "info": 19,
-      "warning": 15,
+      "warning": 14,
       "error": 4
     },
     "by_rule": {
@@ -580,7 +563,7 @@
         "warning": 3
       },
       "BC-07": {
-        "warning": 2
+        "warning": 1
       },
       "BC-08": {
         "warning": 4

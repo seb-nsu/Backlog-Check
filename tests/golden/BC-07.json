@@ -134,6 +134,48 @@
         }
       ],
       "expected": []
+    },
+    {
+      "name": "de-near-miss-dependent",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Zahlung",
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Zahlungsdienst",
+          "description": "Wird für DE-1 gebraucht."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-near-miss-dependent",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Payment",
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Payment service",
+          "description": "Needed by EN-1."
+        }
+      ],
+      "expected": []
     }
   ]
 }

@@ -13,7 +13,7 @@ def test_golden_cases_cover_both_languages(rule):
     assert {"de-trigger", "de-near-miss", "en-trigger", "en-near-miss"} <= names
     for case in cases:
         assert case["language"] == case["name"][:2]
-        if case["name"].endswith("trigger"):
+        if "trigger" in case["name"]:
             assert case["expected"]
             assert all(f["rule"] == rule for f in case["expected"])
         else:

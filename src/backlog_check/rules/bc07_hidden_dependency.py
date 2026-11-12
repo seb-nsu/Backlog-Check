@@ -17,7 +17,14 @@ ID_TOKEN = re.compile(r"\w(?:[\w.\-]*\w)?")
 def check_bc07(ctx: Context) -> Iterator[Finding]:
     for item in ctx.active:
         # ASSUMPTION: the item's own parent and children are already linked and do not count.
-        linked = {item.id, *item.depends_on, *ctx.children.get(item.id, ())}
+        # Items that depend on this item are linked in the other direction and do not count
+        # either: naming them states what this item enables, not what it needs.
+        linked = {
+            item.id,
+            *item.depends_on,
+            *ctx.children.get(item.id, ()),
+            *ctx.dependents.get(item.id, ()),
+        }
         if item.parent:
             linked.add(item.parent)
         seen: set[str] = set()

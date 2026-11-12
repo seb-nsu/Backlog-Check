@@ -29,9 +29,12 @@ class Context:
         self.active = [item for item in items if not config.is_done(item.status)]
         self.active_ids = {item.id for item in self.active}
         self.children: dict[str, list[str]] = {}
+        self.dependents: dict[str, list[str]] = {}
         for item in items:
             if item.parent is not None:
                 self.children.setdefault(item.parent, []).append(item.id)
+            for dep_id in item.depends_on:
+                self.dependents.setdefault(dep_id, []).append(item.id)
         languages = config.languages()
         self.vague_words = _merge(config.vague_words[lang] for lang in languages)
         self.benefit_patterns = [
