@@ -16,6 +16,7 @@ from typing import Any
 
 from .errors import InputError
 from .model import KINDS, PRIORITIES, Item
+from .presets import Preset
 
 FIELDS = (
     "id",
@@ -190,8 +191,11 @@ def _rank(value: Any, line: int) -> int | None:
 # --- JSON ----------------------------------------------------------------------------------
 
 
-def load_json(text: str, mapping: Mapping[str, str] | None = None) -> list[Item]:
-    """Read a JSON array of objects. ``mapping`` renames source keys to field names."""
+def load_json(
+    text: str, mapping: Mapping[str, str] | None = None, preset: Preset | None = None
+) -> list[Item]:
+    """Read a JSON array of objects. ``mapping`` renames source keys to field names and wins
+    over the columns of ``preset``."""
     text = text.removeprefix("﻿")
     try:
         data = json.loads(text)
@@ -202,7 +206,15 @@ def load_json(text: str, mapping: Mapping[str, str] | None = None) -> list[Item]
     records = []
     for line, record in zip(_json_element_lines(text), data, strict=True):
         if isinstance(record, Mapping):
-            record = _apply_mapping(record, mapping, line)
+            if preset is not None:
+                record = _apply_mapping(record, {**preset.mapping(record), **(mapping or {})}, line)
+                record = {
+                    key: preset.text(key, value) if isinstance(value, str) else value
+                    for key, value in record.items()
+                }
+                record["kind"] = preset.kind(record.get("kind"))
+            else:
+                record = _apply_mapping(record, mapping, line)
         records.append((line, record))
     return build_items(records)
 
@@ -250,11 +262,13 @@ def load_csv(
     mapping: Mapping[str, str] | None = None,
     separator: str | None = None,
     delimiter: str | None = None,
+    preset: Preset | None = None,
 ) -> list[Item]:
     """Read CSV with a header row.
 
     ``mapping`` renames columns to field names, ``separator`` splits list fields (default: line
     break or ``|``), ``delimiter`` separates cells (default: detected from the header row).
+    ``preset`` supplies the mapping of a known export; ``mapping`` wins over it.
     """
     text = text.removeprefix("﻿")
     if not text.strip():
@@ -264,12 +278,15 @@ def load_csv(
     reader = csv.reader(io.StringIO(text, newline=""), delimiter=delimiter, strict=True)
     try:
         header = next(reader)
+        if preset is not None:
+            mapping = {**preset.mapping(header), **(mapping or {})}
         columns = _csv_columns(header, mapping)
         records = []
         start = reader.line_num + 1
         for row in reader:
             if any(cell.strip() for cell in row):
-                records.append((start, _csv_record(row, columns, separator, start)))
+                record = _csv_record(row, columns, separator, start, preset)
+                records.append((start, record))
             start = reader.line_num + 1
     except csv.Error as exc:
         raise InputError("input.csv_syntax", {"detail": str(exc)}, reader.line_num) from None
@@ -299,11 +316,19 @@ def _csv_columns(header: Sequence[str], mapping: Mapping[str, str] | None) -> di
 
 
 def _csv_record(
-    row: Sequence[str], columns: Mapping[str, int], separator: str | None, line: int
+    row: Sequence[str],
+    columns: Mapping[str, int],
+    separator: str | None,
+    line: int,
+    preset: Preset | None = None,
 ) -> dict[str, Any]:
     record: dict[str, Any] = {}
     for name, index in columns.items():
         cell = row[index].strip() if index < len(row) else ""
+        if preset is not None:
+            cell = preset.text(name, cell).strip()
+            if name == "kind":
+                cell = preset.kind(cell)
         if name in LIST_FIELDS:
             record[name] = split_list(cell, separator)
         elif name == "estimate":
@@ -349,6 +374,7 @@ def load_file(
     mapping: Mapping[str, str] | None = None,
     separator: str | None = None,
     delimiter: str | None = None,
+    preset: Preset | None = None,
 ) -> list[Item]:
     """Read a ``.json`` or ``.csv`` file (UTF-8, optional BOM)."""
     path = Path(path)
@@ -362,5 +388,5 @@ def load_file(
     except UnicodeDecodeError:
         raise InputError("input.encoding", {"path": str(path)}) from None
     if suffix == ".json":
-        return load_json(text, mapping)
-    return load_csv(text, mapping, separator, delimiter)
+        return load_json(text, mapping, preset)
+    return load_csv(text, mapping, separator, delimiter, preset)

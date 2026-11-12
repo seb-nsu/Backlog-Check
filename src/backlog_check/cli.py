@@ -21,6 +21,7 @@ from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
 from .model import Finding, Item
+from .presets import PRESETS
 from .reader import FIELDS, load_file
 from .summary import summarize
 
@@ -60,6 +61,9 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="COLUMN=FIELD",
         help='map a source column to a field, e.g. "Summary=title" (repeatable)',
     )
+    parser.add_argument(
+        "--preset", choices=sorted(PRESETS), help="column mapping of a Jira or Azure DevOps export"
+    )
     parser.add_argument("--separator", help="separator of list fields in CSV cells")
     parser.add_argument("--delimiter", help="cell delimiter of the CSV file (default: detected)")
     parser.add_argument("--output", help="write the result to this file instead of stdout")
@@ -77,6 +81,7 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
             mapping,
             args.separator if args.separator is not None else config.list_separator,
             args.delimiter,
+            PRESETS[args.preset] if args.preset else None,
         )
     except BacklogCheckError as error:
         sys.stderr.write(format_error(error, args.lang) + "\n")
