@@ -1,0 +1,643 @@
+[
+  {
+    "id": "BIB-1",
+    "kind": "epic",
+    "title": "Ausleihe",
+    "description": "Alles rund um das Ausleihen von Medien.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-2",
+    "kind": "epic",
+    "title": "Konto und Gebühren",
+    "description": "Leserkonto, Mahnungen und Gebühren.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-3",
+    "kind": "epic",
+    "title": "Katalog und Suche",
+    "description": "Medien finden und Verfügbarkeit sehen.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-4",
+    "kind": "epic",
+    "title": "Veranstaltungen",
+    "description": "Lesungen und Workshops der Bibliothek.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-5",
+    "kind": "epic",
+    "title": "Barrierefreiheit",
+    "description": "Querschnittsthema, Stories folgen.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-10",
+    "kind": "story",
+    "title": "Medium ausleihen",
+    "description": "Als Leserin möchte ich ein Medium am Automaten ausleihen, damit ich nicht an der Theke warten muss.",
+    "acceptance_criteria": [
+      "Nach dem Scannen des Ausweises und des Mediums ist die Ausleihe in höchstens 10 Sekunden gebucht.",
+      "Die Leihfrist beträgt 28 Tage und wird auf dem Beleg angezeigt.",
+      "Bei gesperrtem Konto erscheint ein Hinweis mit dem Grund der Sperre."
+    ],
+    "estimate": 5,
+    "priority": "must",
+    "rank": 1,
+    "status": null,
+    "depends_on": [
+      "BIB-14"
+    ],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-11",
+    "kind": "story",
+    "title": "Medium verlängern",
+    "description": "Als Leser möchte ich ein Medium online verlängern, damit ich keine Gebühren zahle.",
+    "acceptance_criteria": [
+      "Eine Verlängerung ist bis zu zweimal möglich.",
+      "Die Verlängerung ist einfach."
+    ],
+    "estimate": 3,
+    "priority": "must",
+    "rank": 2,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-12",
+    "kind": "story",
+    "title": "Medium vormerken",
+    "description": "Als Leserin möchte ich ein ausgeliehenes Medium vormerken, damit ich es als Nächste bekomme.",
+    "acceptance_criteria": [
+      "Vormerkungen sind nur für ausgeliehene Medien möglich.",
+      "Die Abholfrist beträgt 7 Tage."
+    ],
+    "estimate": 5,
+    "priority": "should",
+    "rank": 4,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-13",
+    "kind": "story",
+    "title": "Rückgabe am Automaten",
+    "description": "Als Leser möchte ich Medien rund um die Uhr zurückgeben.",
+    "acceptance_criteria": [
+      "Die Rückgabe wird sofort im Konto gebucht.",
+      "Der Beleg kommt per E-Mail."
+    ],
+    "estimate": 5,
+    "priority": "must",
+    "rank": 3,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-14",
+    "kind": "story",
+    "title": "Ausweis am Automaten erkennen",
+    "description": "Als Leserin möchte ich mich mit dem Ausweis anmelden, um ausleihen zu können.",
+    "acceptance_criteria": [
+      "Der Barcode des Ausweises wird in unter 2 Sekunden erkannt."
+    ],
+    "estimate": 3,
+    "priority": "must",
+    "rank": 5,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-15",
+    "kind": "story",
+    "title": "Ausleihe und Rückgabe für Schulklassen",
+    "description": "Als Lehrerin möchte ich für eine Klasse ausleihen und zurückgeben, damit der Ausflug schnell geht.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": "could",
+    "rank": 6,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-16",
+    "kind": "story",
+    "title": "Leihfrist anzeigen",
+    "description": "Als Leser möchte ich die Leihfrist sehen, damit ich nichts überziehe.",
+    "acceptance_criteria": [
+      "Die Leihfrist beträgt 21 Tage.",
+      "Die Frist steht in der Übersicht."
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": 8,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-1"
+  },
+  {
+    "id": "BIB-20",
+    "kind": "story",
+    "title": "Kontoübersicht anzeigen",
+    "description": "Als Leserin möchte ich meine Ausleihen und Gebühren sehen, damit ich den Überblick behalte.",
+    "acceptance_criteria": [
+      "Die Übersicht zeigt alle Ausleihen mit Rückgabedatum.",
+      "Offene Gebühren stehen mit Betrag in Euro da.",
+      "Die Seite lädt schnell."
+    ],
+    "estimate": 3,
+    "priority": "must",
+    "rank": 7,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-21",
+    "kind": "story",
+    "title": "Gebühren online bezahlen",
+    "description": "Als Leser möchte ich Gebühren online bezahlen, damit mein Konto wieder frei ist.",
+    "acceptance_criteria": [
+      "Zahlung per Lastschrift und Karte ist möglich.",
+      "Nach der Zahlung ist das Konto in höchstens 1 Minute entsperrt."
+    ],
+    "estimate": 8,
+    "priority": "should",
+    "rank": 9,
+    "status": null,
+    "depends_on": [
+      "BIB-20",
+      "BIB-22"
+    ],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-22",
+    "kind": "story",
+    "title": "Zahlungsdienst anbinden",
+    "description": "Technische Anbindung des Zahlungsdienstes, damit BIB-21 umgesetzt werden kann.",
+    "acceptance_criteria": [
+      "Testzahlungen laufen in der Testumgebung durch."
+    ],
+    "estimate": 13,
+    "priority": "could",
+    "rank": 10,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-23",
+    "kind": "story",
+    "title": "Mahnung per E-Mail",
+    "description": "Als Leserin möchte ich vor Ablauf der Leihfrist erinnert werden, damit ich keine Gebühr zahle.",
+    "acceptance_criteria": [
+      "Die Erinnerung kommt 3 Tage vor Ablauf.",
+      "Die E-Mail ist benutzerfreundlich gestaltet."
+    ],
+    "estimate": 3,
+    "priority": "should",
+    "rank": 11,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-24",
+    "kind": "story",
+    "title": "Mahnung per E-Mail versenden",
+    "description": "Als Leserin möchte ich vor Ablauf der Leihfrist erinnert werden, damit ich keine Gebühr zahle.",
+    "acceptance_criteria": [
+      "Die Erinnerung kommt 2 Tage vor Ablauf."
+    ],
+    "estimate": 3,
+    "priority": "should",
+    "rank": 12,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-25",
+    "kind": "story",
+    "title": "Gebührenordnung hinterlegen",
+    "description": "Als Mitarbeiter möchte ich die Gebühren pflegen, damit Änderungen ohne Entwicklung möglich sind.",
+    "acceptance_criteria": [
+      "Gebühren sind je Medienart einstellbar.",
+      "Änderungen gelten ab dem Folgetag."
+    ],
+    "estimate": null,
+    "priority": "could",
+    "rank": 13,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-26",
+    "kind": "story",
+    "title": "Konto sperren und entsperren",
+    "description": "Als Mitarbeiterin möchte ich Konten sperren und entsperren.",
+    "acceptance_criteria": [
+      "Eine Sperre braucht einen Grund.",
+      "Die Sperre wird protokolliert."
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": 14,
+    "status": null,
+    "depends_on": [
+      "BIB-27"
+    ],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-27",
+    "kind": "story",
+    "title": "Sperrgründe pflegen",
+    "description": "Als Mitarbeiterin möchte ich Sperrgründe pflegen, damit Sperren einheitlich sind.",
+    "acceptance_criteria": [
+      "Sperrgründe haben einen Text und einen Code."
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": 15,
+    "status": null,
+    "depends_on": [
+      "BIB-26"
+    ],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-30",
+    "kind": "story",
+    "title": "Katalog durchsuchen",
+    "description": "Als Leser möchte ich den Katalog nach Titel, Person und Schlagwort durchsuchen, damit ich Medien finde.",
+    "acceptance_criteria": [
+      "Die Suche liefert Treffer in unter 1 Sekunde.",
+      "Tippfehler mit einem falschen Buchstaben werden toleriert.",
+      "Ergebnisse lassen sich nach Jahr filtern."
+    ],
+    "estimate": 8,
+    "priority": "must",
+    "rank": 16,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-31",
+    "kind": "story",
+    "title": "Verfügbarkeit anzeigen",
+    "description": "Als Leserin möchte ich sehen, ob ein Medium ausleihbar ist, damit ich nicht umsonst komme.",
+    "acceptance_criteria": [
+      "Status ist ausleihbar, ausgeliehen oder vorgemerkt.",
+      "Standort und Regal werden angezeigt."
+    ],
+    "estimate": 3,
+    "priority": "must",
+    "rank": 17,
+    "status": null,
+    "depends_on": [
+      "BIB-30"
+    ],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-32",
+    "kind": "story",
+    "title": "Neuerscheinungen anzeigen",
+    "description": "Als Leser möchte ich Neuerscheinungen sehen, damit ich auf dem Laufenden bleibe.",
+    "acceptance_criteria": [
+      "Es werden die Zugänge der letzten 30 Tage gezeigt."
+    ],
+    "estimate": null,
+    "priority": "could",
+    "rank": 18,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-33",
+    "kind": "story",
+    "title": "Merkliste führen",
+    "description": "Als Leserin möchte ich Medien auf eine Merkliste setzen, um sie später auszuleihen.",
+    "acceptance_criteria": [
+      "Die Merkliste hat höchstens 200 Einträge.",
+      "Einträge lassen sich einzeln löschen."
+    ],
+    "estimate": 3,
+    "priority": "could",
+    "rank": 19,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-34",
+    "kind": "story",
+    "title": "Suche nach ISBN",
+    "description": "Als Mitarbeiter möchte ich nach ISBN suchen, damit ich Medien schnell zuordne.",
+    "acceptance_criteria": [
+      "ISBN mit und ohne Bindestriche werden erkannt."
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": 20,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-35",
+    "kind": "story",
+    "title": "Erweiterte Suche",
+    "description": "Als Leser möchte ich mehrere Suchfelder kombinieren, damit ich gezielt suche.",
+    "acceptance_criteria": [
+      "Felder lassen sich mit UND und ODER verbinden.",
+      "Die Maske ist übersichtlich, etc."
+    ],
+    "estimate": null,
+    "priority": "should",
+    "rank": 21,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-36",
+    "kind": "story",
+    "title": "Katalog-Export für Partnerbibliotheken",
+    "description": "Als Partnerbibliothek möchte ich den Katalog als Datei erhalten, damit wir ihn einlesen können.",
+    "acceptance_criteria": [
+      "Der Export liegt nachts bereit.",
+      "Das Format ist MARC21.",
+      "Der Export enthält alle Exemplare.",
+      "Gelöschte Exemplare sind markiert.",
+      "Die Datei ist kleiner als 500 MB.",
+      "Der Export ist signiert.",
+      "Fehler werden gemeldet.",
+      "Der Abruf ist protokolliert.",
+      "Alte Exporte werden nach 14 Tagen gelöscht."
+    ],
+    "estimate": 21,
+    "priority": "could",
+    "rank": 30,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3"
+  },
+  {
+    "id": "BIB-40",
+    "kind": "story",
+    "title": "Veranstaltungen anzeigen",
+    "description": "Als Besucherin möchte ich die Veranstaltungen der nächsten Wochen sehen, damit ich planen kann.",
+    "acceptance_criteria": [
+      "Es werden Veranstaltungen der nächsten 8 Wochen angezeigt."
+    ],
+    "estimate": 3,
+    "priority": "should",
+    "rank": 22,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-4"
+  },
+  {
+    "id": "BIB-41",
+    "kind": "story",
+    "title": "Für Veranstaltung anmelden",
+    "description": "Als Besucher möchte ich mich anmelden, damit mir ein Platz sicher ist.",
+    "acceptance_criteria": [
+      "Die Anmeldung schließt 2 Tage vor Beginn.",
+      "Bei voller Veranstaltung gibt es eine Warteliste."
+    ],
+    "estimate": 5,
+    "priority": "should",
+    "rank": 23,
+    "status": null,
+    "depends_on": [
+      "BIB-40"
+    ],
+    "parent": "BIB-4"
+  },
+  {
+    "id": "BIB-42",
+    "kind": "story",
+    "title": "Erinnerung an Veranstaltung",
+    "description": "Als Besucherin möchte ich erinnert werden, damit ich den Termin nicht vergesse.",
+    "acceptance_criteria": [
+      "Die Erinnerung kommt 1 Tag vorher."
+    ],
+    "estimate": null,
+    "priority": "could",
+    "rank": 24,
+    "status": null,
+    "depends_on": [
+      "BIB-41"
+    ],
+    "parent": "BIB-4"
+  },
+  {
+    "id": "BIB-43",
+    "kind": "story",
+    "title": "Anmeldeschluss festlegen",
+    "description": "Als Mitarbeiterin möchte ich den Anmeldeschluss je Veranstaltung festlegen.",
+    "acceptance_criteria": [
+      "Der Anmeldeschluss ist standardmäßig 3 Tage vor Beginn."
+    ],
+    "estimate": 2,
+    "priority": "could",
+    "rank": 25,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-4"
+  },
+  {
+    "id": "BIB-44",
+    "kind": "story",
+    "title": "Teilnehmerliste drucken",
+    "description": "Als Mitarbeiter möchte ich die Teilnehmerliste drucken, damit ich am Einlass abhaken kann.",
+    "acceptance_criteria": [
+      "Die Liste ist alphabetisch sortiert."
+    ],
+    "estimate": 1,
+    "priority": "wont",
+    "rank": 40,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-4"
+  },
+  {
+    "id": "BIB-50",
+    "kind": "bug",
+    "title": "Beleg zeigt falsches Rückgabedatum",
+    "description": "Am Automaten 2 steht auf dem Beleg das Datum der Ausleihe statt der Rückgabe.",
+    "acceptance_criteria": [
+      "Der Beleg zeigt das Rückgabedatum."
+    ],
+    "estimate": 2,
+    "priority": "must",
+    "rank": 26,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-51",
+    "kind": "bug",
+    "title": "Suche findet keine Umlaute",
+    "description": "Suche nach „Märchen“ liefert keine Treffer, „Maerchen“ schon.",
+    "acceptance_criteria": [],
+    "estimate": 3,
+    "priority": "must",
+    "rank": 27,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-52",
+    "kind": "bug",
+    "title": "Doppelte Mahnung",
+    "description": "Manche Leser bekommen die Mahnung zweimal. Tritt seit BIB-23 auf.",
+    "acceptance_criteria": [
+      "Jede Mahnung wird genau einmal versendet."
+    ],
+    "estimate": null,
+    "priority": "should",
+    "rank": 28,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-53",
+    "kind": "bug",
+    "title": "Merkliste verliert Einträge",
+    "description": "Nach dem Abmelden ist die Merkliste leer.",
+    "acceptance_criteria": [
+      "Die Merkliste bleibt nach dem Abmelden erhalten."
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": 29,
+    "status": null,
+    "depends_on": [
+      "BIB-33"
+    ],
+    "parent": null
+  },
+  {
+    "id": "BIB-60",
+    "kind": "story",
+    "title": "Kontrast erhöhen",
+    "description": "Als Leserin mit Sehschwäche möchte ich einen Modus mit hohem Kontrast, damit ich alles lesen kann.",
+    "acceptance_criteria": [
+      "Kontrastverhältnis mindestens 7:1."
+    ],
+    "estimate": 3,
+    "priority": "should",
+    "rank": 31,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-5"
+  },
+  {
+    "id": "BIB-61",
+    "kind": "story",
+    "title": "Bedienung per Tastatur",
+    "description": "Als Leser ohne Maus möchte ich alle Funktionen per Tastatur erreichen, damit ich die Seite nutzen kann.",
+    "acceptance_criteria": [
+      "Alle Bedienelemente sind per Tab erreichbar.",
+      "Der Fokus ist sichtbar."
+    ],
+    "estimate": 5,
+    "priority": "should",
+    "rank": 32,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-5"
+  },
+  {
+    "id": "BIB-70",
+    "kind": "story",
+    "title": "Alte Anmeldung ersetzen",
+    "description": "Als Leser möchte ich mich mit E-Mail anmelden, damit ich keine Ausweisnummer brauche.",
+    "acceptance_criteria": [],
+    "estimate": 5,
+    "priority": "must",
+    "rank": null,
+    "status": "erledigt",
+    "depends_on": [],
+    "parent": "BIB-2"
+  },
+  {
+    "id": "BIB-71",
+    "kind": "story",
+    "title": "Newsletter abonnieren",
+    "description": "Als Besucherin möchte ich den Newsletter abonnieren.",
+    "acceptance_criteria": [],
+    "estimate": null,
+    "priority": null,
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": null
+  },
+  {
+    "id": "BIB-72",
+    "kind": "story",
+    "title": "Statistik der Ausleihen",
+    "description": "Als Leitung möchte ich monatliche Zahlen sehen, damit ich berichten kann.",
+    "acceptance_criteria": [
+      "Die Zahlen sind je Medienart aufgeteilt."
+    ],
+    "estimate": 8,
+    "priority": "could",
+    "rank": 33,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-6"
+  }
+]

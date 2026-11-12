@@ -1,0 +1,69 @@
+id;kind;title;description;acceptance_criteria;estimate;priority;rank;status;depends_on;parent
+BIB-1;epic;Ausleihe;Alles rund um das Ausleihen von Medien.;;;;;;;
+BIB-2;epic;Konto und Gebühren;Leserkonto, Mahnungen und Gebühren.;;;;;;;
+BIB-3;epic;Katalog und Suche;Medien finden und Verfügbarkeit sehen.;;;;;;;
+BIB-4;epic;Veranstaltungen;Lesungen und Workshops der Bibliothek.;;;;;;;
+BIB-5;epic;Barrierefreiheit;Querschnittsthema, Stories folgen.;;;;;;;
+BIB-10;story;Medium ausleihen;Als Leserin möchte ich ein Medium am Automaten ausleihen, damit ich nicht an der Theke warten muss.;"Nach dem Scannen des Ausweises und des Mediums ist die Ausleihe in höchstens 10 Sekunden gebucht.
+Die Leihfrist beträgt 28 Tage und wird auf dem Beleg angezeigt.
+Bei gesperrtem Konto erscheint ein Hinweis mit dem Grund der Sperre.";5;must;1;;BIB-14;BIB-1
+BIB-11;story;Medium verlängern;Als Leser möchte ich ein Medium online verlängern, damit ich keine Gebühren zahle.;"Eine Verlängerung ist bis zu zweimal möglich.
+Die Verlängerung ist einfach.";3;must;2;;;BIB-1
+BIB-12;story;Medium vormerken;Als Leserin möchte ich ein ausgeliehenes Medium vormerken, damit ich es als Nächste bekomme.;"Vormerkungen sind nur für ausgeliehene Medien möglich.
+Die Abholfrist beträgt 7 Tage.";5;should;4;;;BIB-1
+BIB-13;story;Rückgabe am Automaten;Als Leser möchte ich Medien rund um die Uhr zurückgeben.;"Die Rückgabe wird sofort im Konto gebucht.
+Der Beleg kommt per E-Mail.";5;must;3;;;BIB-1
+BIB-14;story;Ausweis am Automaten erkennen;Als Leserin möchte ich mich mit dem Ausweis anmelden, um ausleihen zu können.;Der Barcode des Ausweises wird in unter 2 Sekunden erkannt.;3;must;5;;;BIB-1
+BIB-15;story;Ausleihe und Rückgabe für Schulklassen;Als Lehrerin möchte ich für eine Klasse ausleihen und zurückgeben, damit der Ausflug schnell geht.;;;could;6;;;BIB-1
+BIB-16;story;Leihfrist anzeigen;Als Leser möchte ich die Leihfrist sehen, damit ich nichts überziehe.;"Die Leihfrist beträgt 21 Tage.
+Die Frist steht in der Übersicht.";2;should;8;;;BIB-1
+BIB-20;story;Kontoübersicht anzeigen;Als Leserin möchte ich meine Ausleihen und Gebühren sehen, damit ich den Überblick behalte.;"Die Übersicht zeigt alle Ausleihen mit Rückgabedatum.
+Offene Gebühren stehen mit Betrag in Euro da.
+Die Seite lädt schnell.";3;must;7;;;BIB-2
+BIB-21;story;Gebühren online bezahlen;Als Leser möchte ich Gebühren online bezahlen, damit mein Konto wieder frei ist.;"Zahlung per Lastschrift und Karte ist möglich.
+Nach der Zahlung ist das Konto in höchstens 1 Minute entsperrt.";8;should;9;;BIB-20|BIB-22;BIB-2
+BIB-22;story;Zahlungsdienst anbinden;Technische Anbindung des Zahlungsdienstes, damit BIB-21 umgesetzt werden kann.;Testzahlungen laufen in der Testumgebung durch.;13;could;10;;;BIB-2
+BIB-23;story;Mahnung per E-Mail;Als Leserin möchte ich vor Ablauf der Leihfrist erinnert werden, damit ich keine Gebühr zahle.;"Die Erinnerung kommt 3 Tage vor Ablauf.
+Die E-Mail ist benutzerfreundlich gestaltet.";3;should;11;;;BIB-2
+BIB-24;story;Mahnung per E-Mail versenden;Als Leserin möchte ich vor Ablauf der Leihfrist erinnert werden, damit ich keine Gebühr zahle.;Die Erinnerung kommt 2 Tage vor Ablauf.;3;should;12;;;BIB-2
+BIB-25;story;Gebührenordnung hinterlegen;Als Mitarbeiter möchte ich die Gebühren pflegen, damit Änderungen ohne Entwicklung möglich sind.;"Gebühren sind je Medienart einstellbar.
+Änderungen gelten ab dem Folgetag.";;could;13;;;BIB-2
+BIB-26;story;Konto sperren und entsperren;Als Mitarbeiterin möchte ich Konten sperren und entsperren.;"Eine Sperre braucht einen Grund.
+Die Sperre wird protokolliert.";2;should;14;;BIB-27;BIB-2
+BIB-27;story;Sperrgründe pflegen;Als Mitarbeiterin möchte ich Sperrgründe pflegen, damit Sperren einheitlich sind.;Sperrgründe haben einen Text und einen Code.;2;should;15;;BIB-26;BIB-2
+BIB-30;story;Katalog durchsuchen;Als Leser möchte ich den Katalog nach Titel, Person und Schlagwort durchsuchen, damit ich Medien finde.;"Die Suche liefert Treffer in unter 1 Sekunde.
+Tippfehler mit einem falschen Buchstaben werden toleriert.
+Ergebnisse lassen sich nach Jahr filtern.";8;must;16;;;BIB-3
+BIB-31;story;Verfügbarkeit anzeigen;Als Leserin möchte ich sehen, ob ein Medium ausleihbar ist, damit ich nicht umsonst komme.;"Status ist ausleihbar, ausgeliehen oder vorgemerkt.
+Standort und Regal werden angezeigt.";3;must;17;;BIB-30;BIB-3
+BIB-32;story;Neuerscheinungen anzeigen;Als Leser möchte ich Neuerscheinungen sehen, damit ich auf dem Laufenden bleibe.;Es werden die Zugänge der letzten 30 Tage gezeigt.;;could;18;;;BIB-3
+BIB-33;story;Merkliste führen;Als Leserin möchte ich Medien auf eine Merkliste setzen, um sie später auszuleihen.;"Die Merkliste hat höchstens 200 Einträge.
+Einträge lassen sich einzeln löschen.";3;could;19;;;BIB-3
+BIB-34;story;Suche nach ISBN;Als Mitarbeiter möchte ich nach ISBN suchen, damit ich Medien schnell zuordne.;ISBN mit und ohne Bindestriche werden erkannt.;2;should;20;;;BIB-3
+BIB-35;story;Erweiterte Suche;Als Leser möchte ich mehrere Suchfelder kombinieren, damit ich gezielt suche.;"Felder lassen sich mit UND und ODER verbinden.
+Die Maske ist übersichtlich, etc.";;should;21;;;BIB-3
+BIB-36;story;Katalog-Export für Partnerbibliotheken;Als Partnerbibliothek möchte ich den Katalog als Datei erhalten, damit wir ihn einlesen können.;"Der Export liegt nachts bereit.
+Das Format ist MARC21.
+Der Export enthält alle Exemplare.
+Gelöschte Exemplare sind markiert.
+Die Datei ist kleiner als 500 MB.
+Der Export ist signiert.
+Fehler werden gemeldet.
+Der Abruf ist protokolliert.
+Alte Exporte werden nach 14 Tagen gelöscht.";21;could;30;;;BIB-3
+BIB-40;story;Veranstaltungen anzeigen;Als Besucherin möchte ich die Veranstaltungen der nächsten Wochen sehen, damit ich planen kann.;Es werden Veranstaltungen der nächsten 8 Wochen angezeigt.;3;should;22;;;BIB-4
+BIB-41;story;Für Veranstaltung anmelden;Als Besucher möchte ich mich anmelden, damit mir ein Platz sicher ist.;"Die Anmeldung schließt 2 Tage vor Beginn.
+Bei voller Veranstaltung gibt es eine Warteliste.";5;should;23;;BIB-40;BIB-4
+BIB-42;story;Erinnerung an Veranstaltung;Als Besucherin möchte ich erinnert werden, damit ich den Termin nicht vergesse.;Die Erinnerung kommt 1 Tag vorher.;;could;24;;BIB-41;BIB-4
+BIB-43;story;Anmeldeschluss festlegen;Als Mitarbeiterin möchte ich den Anmeldeschluss je Veranstaltung festlegen.;Der Anmeldeschluss ist standardmäßig 3 Tage vor Beginn.;2;could;25;;;BIB-4
+BIB-44;story;Teilnehmerliste drucken;Als Mitarbeiter möchte ich die Teilnehmerliste drucken, damit ich am Einlass abhaken kann.;Die Liste ist alphabetisch sortiert.;1;wont;40;;;BIB-4
+BIB-50;bug;Beleg zeigt falsches Rückgabedatum;Am Automaten 2 steht auf dem Beleg das Datum der Ausleihe statt der Rückgabe.;Der Beleg zeigt das Rückgabedatum.;2;must;26;;;
+BIB-51;bug;Suche findet keine Umlaute;Suche nach „Märchen“ liefert keine Treffer, „Maerchen“ schon.;;3;must;27;;;
+BIB-52;bug;Doppelte Mahnung;Manche Leser bekommen die Mahnung zweimal. Tritt seit BIB-23 auf.;Jede Mahnung wird genau einmal versendet.;;should;28;;;
+BIB-53;bug;Merkliste verliert Einträge;Nach dem Abmelden ist die Merkliste leer.;Die Merkliste bleibt nach dem Abmelden erhalten.;2;should;29;;BIB-33;
+BIB-60;story;Kontrast erhöhen;Als Leserin mit Sehschwäche möchte ich einen Modus mit hohem Kontrast, damit ich alles lesen kann.;Kontrastverhältnis mindestens 7:1.;3;should;31;;;BIB-5
+BIB-61;story;Bedienung per Tastatur;Als Leser ohne Maus möchte ich alle Funktionen per Tastatur erreichen, damit ich die Seite nutzen kann.;"Alle Bedienelemente sind per Tab erreichbar.
+Der Fokus ist sichtbar.";5;should;32;;;BIB-5
+BIB-70;story;Alte Anmeldung ersetzen;Als Leser möchte ich mich mit E-Mail anmelden, damit ich keine Ausweisnummer brauche.;;5;must;;erledigt;;BIB-2
+BIB-71;story;Newsletter abonnieren;Als Besucherin möchte ich den Newsletter abonnieren.;;;;;;;
+BIB-72;story;Statistik der Ausleihen;Als Leitung möchte ich monatliche Zahlen sehen, damit ich berichten kann.;Die Zahlen sind je Medienart aufgeteilt.;8;could;33;;;BIB-6

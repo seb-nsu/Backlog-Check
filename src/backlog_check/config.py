@@ -140,11 +140,14 @@ DEFAULT_TERM_STOPWORDS: dict[str, list[str]] = {
         "des", "die", "ein", "eine", "einer", "etwa", "für", "höchstens", "im", "in",
         "innerhalb", "ist", "liegt", "max", "maximal", "mindestens", "mit", "nach", "sind",
         "spätestens", "über", "um", "unter", "vom", "von", "zu",
+        "dauert", "erfolgt", "gilt", "gelten", "hat", "haben", "kommt", "kommen", "läuft",
+        "wird", "werden",
     ],
     "en": [
         "a", "about", "after", "an", "approximately", "are", "at", "by", "for", "in", "is",
         "least", "less", "max", "maximum", "minimum", "more", "most", "of", "over", "than",
         "the", "to", "under", "up", "within",
+        "arrives", "be", "comes", "has", "have", "is", "lasts", "runs", "takes", "will",
     ],
 }  # fmt: skip
 
