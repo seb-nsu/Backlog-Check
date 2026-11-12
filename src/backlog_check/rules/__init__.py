@@ -17,6 +17,7 @@ from .bc08_dependency_order import check_bc08
 from .bc09_cycle import check_bc09
 from .bc10_duplicate import check_bc10
 from .bc11_conflicting_values import check_bc11
+from .bc12_structure import check_bc12
 
 Rule = Callable[[Context], Iterable[Finding]]
 
@@ -32,4 +33,5 @@ RULES: dict[str, Rule] = {
     "BC-09": check_bc09,
     "BC-10": check_bc10,
     "BC-11": check_bc11,
+    "BC-12": check_bc12,
 }
