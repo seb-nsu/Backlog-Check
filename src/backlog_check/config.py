@@ -148,6 +148,19 @@ DEFAULT_UNITS: dict[str, dict[str, str]] = {
     },
 }
 
+# BC-11 compares quantities in a base unit: canonical unit -> (base unit, factor).
+DEFAULT_UNIT_CONVERSIONS: dict[str, tuple[str, float]] = {
+    "ms": ("s", 0.001),
+    "min": ("s", 60),
+    "h": ("s", 3600),
+    "d": ("s", 86400),
+    "week": ("s", 604800),
+    "kb": ("byte", 1000),
+    "mb": ("byte", 1000**2),
+    "gb": ("byte", 1000**3),
+    "tb": ("byte", 1000**4),
+}
+
 # Words skipped when BC-11 looks for the term in front of a number.
 DEFAULT_TERM_STOPWORDS: dict[str, list[str]] = {
     "de": [
@@ -217,6 +230,9 @@ class Config:
     )
     units: Mapping[str, Mapping[str, str]] = field(
         default_factory=lambda: {lang: dict(units) for lang, units in DEFAULT_UNITS.items()}
+    )
+    unit_conversions: Mapping[str, tuple[str, float]] = field(
+        default_factory=lambda: dict(DEFAULT_UNIT_CONVERSIONS)
     )
     term_stopwords: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_TERM_STOPWORDS)
@@ -339,6 +355,27 @@ def _parse_units(value: Any) -> dict[str, dict[str, str]]:
     return result
 
 
+def _parse_unit_conversions(value: Any) -> dict[str, tuple[str, float]]:
+    # ASSUMPTION: a given table replaces the default table as a whole.
+    if not isinstance(value, Mapping):
+        raise _invalid("unit_conversions", value)
+    result = {}
+    for unit in sorted(value):
+        entry = value[unit]
+        if not (
+            isinstance(entry, list)
+            and len(entry) == 2
+            and isinstance(entry[0], str)
+            and entry[0]
+            and isinstance(entry[1], int | float)
+            and not isinstance(entry[1], bool)
+            and entry[1] > 0
+        ):
+            raise _invalid(f"unit_conversions.{unit}", entry)
+        result[unit] = (entry[0], entry[1])
+    return result
+
+
 def _parse_ignore(value: Any) -> tuple[tuple[str, str], ...]:
     if not isinstance(value, list):
         raise _invalid("ignore", value)
@@ -375,6 +412,7 @@ _PARSERS = {
     "conjunctions": _per_language("conjunctions", DEFAULT_CONJUNCTIONS),
     "activity_patterns": _per_language("activity_patterns", DEFAULT_ACTIVITY_PATTERNS, True),
     "units": _parse_units,
+    "unit_conversions": _parse_unit_conversions,
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
     "similarity_stopwords": _per_language("similarity_stopwords", DEFAULT_SIMILARITY_STOPWORDS),
     "ignore": _parse_ignore,

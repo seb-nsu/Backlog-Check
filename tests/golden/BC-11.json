@@ -65,7 +65,7 @@
           "id": "DE-3",
           "kind": "story",
           "title": "Eintrag DE-3",
-          "description": "Frist 10 Wochen."
+          "description": "Frist 10 Klicks."
         },
         {
           "id": "DE-4",
@@ -145,6 +145,120 @@
           "kind": "story",
           "title": "Eintrag EN-3",
           "description": "Retention is 10 days."
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "de-trigger-converted",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Frist 2 Wochen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Frist 10 Tage"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [
+            "DE-1"
+          ],
+          "field": "title",
+          "span": [
+            6,
+            13
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "other": "DE-1",
+            "other_unit": "Wochen",
+            "other_value": "2",
+            "term": "Frist",
+            "unit": "Tage",
+            "value": "10"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss-converted",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Frist 2 Wochen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Frist 14 Tage"
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger-converted",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Timeout 1 hour"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Timeout 30 minutes"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "severity": "info",
+          "item": "EN-2",
+          "related": [
+            "EN-1"
+          ],
+          "field": "title",
+          "span": [
+            8,
+            18
+          ],
+          "message_key": "bc11.conflicting_values",
+          "params": {
+            "other": "EN-1",
+            "other_unit": "hour",
+            "other_value": "1",
+            "term": "Timeout",
+            "unit": "minutes",
+            "value": "30"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss-converted",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Timeout 1 hour"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Timeout 60 minutes"
         }
       ],
       "expected": []

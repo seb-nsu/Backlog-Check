@@ -88,10 +88,20 @@ def test_overrides():
         ({"ignore": [["BC-99", "A"]]}, "config.invalid_value"),
         ({"ignore": [["BC-01", 1]]}, "config.invalid_value"),
         ({"list_separator": ""}, "config.invalid_value"),
+        ({"unit_conversions": []}, "config.invalid_value"),
+        ({"unit_conversions": {"d": ["s"]}}, "config.invalid_value"),
+        ({"unit_conversions": {"d": ["s", 0]}}, "config.invalid_value"),
+        ({"unit_conversions": {"d": ["", 1]}}, "config.invalid_value"),
+        ({"unit_conversions": {"d": ["s", True]}}, "config.invalid_value"),
     ],
 )
 def test_invalid(data, key):
     assert _error(data).message_key == key
+
+
+def test_unit_conversions_replace_defaults():
+    config = Config.from_dict({"unit_conversions": {"week": ["d", 7]}})
+    assert config.unit_conversions == {"week": ("d", 7)}
 
 
 def test_list_separator_none_is_default():

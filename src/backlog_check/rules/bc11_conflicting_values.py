@@ -44,13 +44,15 @@ def quantities(ctx: Context, item: Item) -> list[Quantity]:
             term = _term(ctx, text[: match.start()])
             if canonical is None or term is None:
                 continue
+            # Convert to the base unit so that "2 Wochen" and "14 Tage" are equal.
+            base, factor = ctx.config.unit_conversions.get(canonical, (canonical, 1))
             result.append(
                 Quantity(
                     term=term,
                     value=value,
-                    amount=Decimal(value.replace(",", ".")),
+                    amount=Decimal(value.replace(",", ".")) * Decimal(str(factor)),
                     unit=unit,
-                    canonical_unit=canonical,
+                    canonical_unit=base,
                     field=text_field.name,
                     span=match.span(),
                 )
