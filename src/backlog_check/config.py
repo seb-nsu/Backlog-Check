@@ -166,6 +166,21 @@ DEFAULT_TERM_STOPWORDS: dict[str, list[str]] = {
     ],
 }  # fmt: skip
 
+# Words left out when BC-10 compares titles and descriptions: articles, conjunctions and the
+# fixed phrases of a user story.
+DEFAULT_SIMILARITY_STOPWORDS: dict[str, list[str]] = {
+    "de": [
+        "als", "am", "an", "auf", "aus", "bei", "damit", "das", "dem", "den", "der", "des",
+        "die", "ein", "eine", "einem", "einen", "einer", "es", "für", "ich", "im", "in", "ist",
+        "kann", "können", "mit", "möchte", "oder", "sind", "um", "und", "von", "werden",
+        "wird", "zu", "zum", "zur",
+    ],
+    "en": [
+        "a", "an", "and", "as", "at", "be", "by", "can", "for", "from", "i", "in", "is", "it",
+        "of", "on", "or", "so", "that", "the", "to", "want", "with",
+    ],
+}  # fmt: skip
+
 DEFAULT_DONE_STATUSES = ("done", "closed", "erledigt", "abgeschlossen")
 
 
@@ -205,6 +220,9 @@ class Config:
     )
     term_stopwords: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_TERM_STOPWORDS)
+    )
+    similarity_stopwords: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: _freeze_lists(DEFAULT_SIMILARITY_STOPWORDS)
     )
     ignore: tuple[tuple[str, str], ...] = ()
     list_separator: str | None = None
@@ -358,6 +376,7 @@ _PARSERS = {
     "activity_patterns": _per_language("activity_patterns", DEFAULT_ACTIVITY_PATTERNS, True),
     "units": _parse_units,
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
+    "similarity_stopwords": _per_language("similarity_stopwords", DEFAULT_SIMILARITY_STOPWORDS),
     "ignore": _parse_ignore,
     "list_separator": _parse_separator,
 }

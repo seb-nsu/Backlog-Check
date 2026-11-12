@@ -14,14 +14,17 @@ RULE = "BC-10"
 WORD = re.compile(r"\w+")
 
 
-def word_set(text: str) -> frozenset[str]:
-    """Normalised word set: case-folded runs of letters, digits and "_"."""
-    return frozenset(WORD.findall(text.casefold()))
+def word_set(text: str, stopwords: frozenset[str] = frozenset()) -> frozenset[str]:
+    """Normalised word set: case-folded runs of letters, digits and "_" without stop words."""
+    return frozenset(WORD.findall(text.casefold())) - stopwords
 
 
 def check_bc10(ctx: Context) -> Iterator[Finding]:
     threshold = ctx.config.duplicate_threshold
-    entries = [(item, word_set(f"{item.title} {item.description}")) for item in ctx.active]
+    stopwords = ctx.similarity_stopwords
+    entries = [
+        (item, word_set(f"{item.title} {item.description}", stopwords)) for item in ctx.active
+    ]
     frequency = Counter(word for _, words in entries for word in words)
     # Prefix filtering: with all word sets ordered by rarity, two sets whose similarity reaches
     # the threshold share at least one word within their prefixes. Only those pairs are compared.

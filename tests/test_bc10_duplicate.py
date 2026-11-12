@@ -18,7 +18,7 @@ def test_bc10_threshold_is_configurable():
     case = {
         "language": "en",
         "config": {"duplicate_threshold": 0.4},
-        "items": _items("a b c", "a b d"),
+        "items": _items("x y z", "x y w"),
     }
     assert [f["params"] for f in run_golden(RULE, case)] == [{"other": "I-0", "similarity": 0.5}]
     case["config"] = {"duplicate_threshold": 0.5}
@@ -42,5 +42,5 @@ def test_bc10_finds_all_earlier_duplicates_and_skips_empty_text():
 
 
 def test_bc10_threshold_above_one_never_triggers():
-    case = {"language": "en", "config": {"duplicate_threshold": 1.5}, "items": _items("a", "a")}
+    case = {"language": "en", "config": {"duplicate_threshold": 1.5}, "items": _items("x", "x")}
     assert run_golden(RULE, case) == []

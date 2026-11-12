@@ -36,7 +36,7 @@
           "message_key": "bc10.possible_duplicate",
           "params": {
             "other": "DE-1",
-            "similarity": 0.89
+            "similarity": 0.86
           }
         }
       ]
@@ -97,7 +97,7 @@
           "message_key": "bc10.possible_duplicate",
           "params": {
             "other": "EN-1",
-            "similarity": 0.88
+            "similarity": 0.83
           }
         }
       ]
@@ -120,6 +120,72 @@
         }
       ],
       "expected": []
+    },
+    {
+      "name": "de-trigger-stopwords",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Ein Konto für die Schule anlegen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Konto Schule anlegen"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "severity": "info",
+          "item": "DE-2",
+          "related": [
+            "DE-1"
+          ],
+          "field": null,
+          "span": null,
+          "message_key": "bc10.possible_duplicate",
+          "params": {
+            "other": "DE-1",
+            "similarity": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-trigger-stopwords",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Create an account for the school"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Create school account"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "severity": "info",
+          "item": "EN-2",
+          "related": [
+            "EN-1"
+          ],
+          "field": null,
+          "span": null,
+          "message_key": "bc10.possible_duplicate",
+          "params": {
+            "other": "EN-1",
+            "similarity": 1.0
+          }
+        }
+      ]
     }
   ]
 }

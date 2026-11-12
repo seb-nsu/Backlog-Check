@@ -49,6 +49,9 @@ class Context:
         for lang in languages:
             for spelling, unit in config.units[lang].items():
                 self.units.setdefault(spelling, unit)
+        self.similarity_stopwords = frozenset(
+            w.casefold() for lang in languages for w in config.similarity_stopwords[lang]
+        )
         self.term_stopwords = frozenset(
             w.casefold() for lang in languages for w in config.term_stopwords[lang]
         )

@@ -161,7 +161,7 @@
       "message_key": "bc10.possible_duplicate",
       "params": {
         "other": "BIB-23",
-        "similarity": 0.95
+        "similarity": 0.92
       }
     },
     {
