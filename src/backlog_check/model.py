@@ -27,6 +27,7 @@ class Item:
     depends_on: tuple[str, ...] = ()
     parent: str | None = None
     updated: str | None = None  # last change as ISO date YYYY-MM-DD
+    line: int | None = field(default=None, compare=False, repr=False)  # position in the source
 
 
 @dataclass(frozen=True)

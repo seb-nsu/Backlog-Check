@@ -6,6 +6,7 @@ Invalid input raises :class:`InputError` with the line of the offending entry.
 from __future__ import annotations
 
 import csv
+import dataclasses
 import datetime
 import io
 import json
@@ -44,6 +45,8 @@ def build_items(records: Iterable[tuple[int, Mapping[str, Any]]]) -> list[Item]:
     first_line: dict[str, int] = {}
     for line, record in records:
         item = item_from_mapping(record, line)
+        if not isinstance(record, Item):
+            item = dataclasses.replace(item, line=line)
         if item.id in first_line:
             raise InputError(
                 "input.duplicate_id", {"id": item.id, "first_line": first_line[item.id]}, line

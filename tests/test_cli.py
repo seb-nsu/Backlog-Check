@@ -166,3 +166,78 @@ def test_text_report_without_field_and_without_stories(tmp_path):
     assert code == 0
     assert "    Das Epic hat keine Stories.\n\n" in out
     assert "Bereit: keine offenen Stories" in out
+
+
+def test_markdown_output(tmp_path):
+    items = [{**CLEAN[0], "title": "A|B", "acceptance_criteria": []}]
+    code, out = _run(_write(tmp_path, "b.json", items), "--format", "markdown")
+    assert code == 1
+    assert out.startswith("# backlog-check\n")
+    assert "| Eintrag | Schwere | Regel | Befund | Feld |" in out
+    assert "| S-1 | Fehler | BC-01 Akzeptanzkriterien fehlen | Es fehlen Akzeptanzkriterien." in out
+    assert "## Zusammenfassung" in out
+    config = _write(tmp_path, "c.json", {"language": "de"})
+    path = _write(tmp_path, "b.json", CLEAN)
+    _, out = _run(path, "--format", "markdown", "--lang", "en", "--config", config)
+    assert "No findings." in out and "| Item |" not in out
+
+
+def test_markdown_escapes_pipes():
+    from backlog_check import Config, Finding, Item
+    from backlog_check.cli import Report, format_markdown
+
+    finding = Finding("BC-02", "warning", "A", "bc02.unmeasurable", {"word": "a|b"})
+    summary = {
+        "items": 1,
+        "checked": 1,
+        "findings": 1,
+        "by_severity": {"info": 0, "warning": 1, "error": 0},
+        "by_rule": {},
+        "stories": 0,
+        "ready_stories": 0,
+        "ready_ratio": None,
+    }
+    report = Report([Item("A", "story", "T")], [finding], summary, "de", Config(), "b.json")
+    assert "„a\\|b“" in format_markdown(report)
+
+
+def test_sarif_output(tmp_path):
+    path = _write(tmp_path, "b.json", WITH_ERROR)
+    code, out = _run(path, "--format", "sarif", "--lang", "en")
+    sarif = json.loads(out)
+    assert code == 1
+    assert sarif["version"] == "2.1.0"
+    run = sarif["runs"][0]
+    assert [r["id"] for r in run["tool"]["driver"]["rules"]][:2] == ["BC-01", "BC-02"]
+    first = next(r for r in run["results"] if r["ruleId"] == "BC-01")
+    assert first["level"] == "error"
+    assert first["message"]["text"] == "Acceptance criteria are missing."
+    location = first["locations"][0]
+    assert location["physicalLocation"]["region"] == {"startLine": 1}
+    assert location["logicalLocations"] == [{"name": "S-2", "kind": "object"}]
+    assert first["properties"]["message_key"] == "bc01.missing"
+    assert {r["level"] for r in run["results"]} == {"error", "warning", "note"}
+
+
+def test_sarif_without_source_lines():
+    from backlog_check import Config, Item, check, summarize
+    from backlog_check.cli import Report, format_sarif
+
+    items = [Item("A", "story", "T")]
+    findings = check(items)
+    report = Report(items, findings, summarize(items, findings), "de", Config(), "b.json")
+    result = json.loads(format_sarif(report))["runs"][0]["results"][0]
+    assert "region" not in result["locations"][0]["physicalLocation"]
+    assert {r["level"] for r in json.loads(format_sarif(report))["runs"][0]["results"]} >= {"note"}
+
+
+def test_reference_date_option(tmp_path):
+    items = [{**CLEAN[0], "updated": "2026-01-01"}]
+    path = _write(tmp_path, "b.json", items)
+    _, out = _run(path, "--format", "json")
+    assert json.loads(out)["findings"] == []
+    _, out = _run(path, "--format", "json", "--reference-date", "2026-11-12")
+    assert [f["rule"] for f in json.loads(out)["findings"]] == ["BC-13"]
+    config = _write(tmp_path, "c.json", {"reference_date": "2026-02-01"})
+    _, out = _run(path, "--format", "json", "--reference-date", "2026-11-12", "--config", config)
+    assert json.loads(out)["findings"] == []

@@ -13,14 +13,16 @@ import json
 import re
 import sys
 from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, TextIO
 
+from . import __version__
 from .catalog import CATALOG_LANGUAGES, format_value, load_catalog, render
 from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
-from .model import Finding, Item
+from .model import RULE_IDS, Finding, Item
 from .presets import PRESETS
 from .reader import FIELDS, load_file
 from .summary import summarize
@@ -28,7 +30,10 @@ from .summary import summarize
 EXIT_OK = 0
 EXIT_ERRORS = 1
 EXIT_INVALID = 2
-FORMATS = ("text", "json", "csv")
+FORMATS = ("text", "json", "csv", "markdown", "sarif")
+SARIF_LEVELS = {"error": "error", "warning": "warning", "info": "note"}
+SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
+PROJECT_URL = "https://github.com/seb-nsu/Backlog-Check"
 CSV_COLUMNS = (
     "rule",
     "severity",
@@ -42,6 +47,18 @@ CSV_COLUMNS = (
     "message",
 )
 LIST_INDEX = re.compile(r"^(\w+)\[(\d+)\]$")
+
+
+@dataclass(frozen=True)
+class Report:
+    """Everything an output format needs."""
+
+    items: Sequence[Item]
+    findings: Sequence[Finding]
+    summary: dict[str, Any]
+    language: str
+    config: Config
+    source: str
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -66,6 +83,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--separator", help="separator of list fields in CSV cells")
     parser.add_argument("--delimiter", help="cell delimiter of the CSV file (default: detected)")
+    parser.add_argument(
+        "--reference-date",
+        metavar="YYYY-MM-DD",
+        help="reference date for BC-13 (stale items), unless the configuration sets one",
+    )
     parser.add_argument("--output", help="write the result to this file instead of stdout")
     return parser
 
@@ -74,7 +96,7 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
     stdout = stdout or sys.stdout
     args = build_parser().parse_args(argv)
     try:
-        config = _load_config(args.config, args.lang)
+        config = _load_config(args.config, args.lang, args.reference_date)
         mapping = _parse_mapping(args.map)
         items = load_file(
             args.file,
@@ -88,7 +110,8 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
         return EXIT_INVALID
     findings = check(items, config)
     summary = summarize(items, findings, config)
-    output = FORMATTERS[args.format](items, findings, summary, args.lang)
+    report = Report(items, findings, summary, args.lang, config, args.file)
+    output = FORMATTERS[args.format](report)
     if args.output:
         Path(args.output).write_text(output, encoding="utf-8", newline="")
     else:
@@ -96,7 +119,7 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
     return EXIT_ERRORS if summary["by_severity"]["error"] else EXIT_OK
 
 
-def _load_config(path: str | None, language: str) -> Config:
+def _load_config(path: str | None, language: str, reference_date: str | None = None) -> Config:
     data: dict[str, Any] = {}
     if path is not None:
         try:
@@ -110,6 +133,8 @@ def _load_config(path: str | None, language: str) -> Config:
     if isinstance(data, dict):
         # ASSUMPTION: --lang also selects the word lists unless the file sets "language".
         data.setdefault("language", language)
+        if reference_date is not None:
+            data.setdefault("reference_date", reference_date)
     return Config.from_dict(data)
 
 
@@ -133,20 +158,16 @@ def format_error(error: BacklogCheckError, language: str) -> str:
 # --- output --------------------------------------------------------------------------------
 
 
-def format_json(
-    items: Sequence[Item], findings: Sequence[Finding], summary: dict[str, Any], language: str
-) -> str:
-    data = {"findings": [f.to_dict() for f in findings], "summary": summary}
+def format_json(report: Report) -> str:
+    data = {"findings": [f.to_dict() for f in report.findings], "summary": report.summary}
     return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
 
-def format_csv(
-    items: Sequence[Item], findings: Sequence[Finding], summary: dict[str, Any], language: str
-) -> str:
+def format_csv(report: Report) -> str:
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator="\n")
     writer.writerow(CSV_COLUMNS)
-    for finding in findings:
+    for finding in report.findings:
         span = finding.span or ("", "")
         writer.writerow(
             [
@@ -159,15 +180,19 @@ def format_csv(
                 span[1],
                 finding.message_key,
                 json.dumps(finding.to_dict()["params"], ensure_ascii=False),
-                render(finding.message_key, finding.params, language),
+                render(finding.message_key, finding.params, report.language),
             ]
         )
     return buffer.getvalue()
 
 
-def format_text(
-    items: Sequence[Item], findings: Sequence[Finding], summary: dict[str, Any], language: str
-) -> str:
+def format_text(report: Report) -> str:
+    items, findings, summary, language = (
+        report.items,
+        report.findings,
+        report.summary,
+        report.language,
+    )
     catalog = load_catalog(language)
     by_id = {item.id: item for item in items}
     lines = [render("report.header", summary, language), ""]
@@ -190,7 +215,12 @@ def format_text(
             lines.append("    (" + "; ".join(details) + ")")
         lines.append("")
     lines.append(catalog["report.summary"])
-    lines.append("    " + render("report.by_severity", summary["by_severity"], language))
+    lines += _summary_lines(summary, catalog, language)
+    return "\n".join(lines) + "\n"
+
+
+def _summary_lines(summary: dict[str, Any], catalog: dict[str, str], language: str) -> list[str]:
+    lines = ["    " + render("report.by_severity", summary["by_severity"], language)]
     for rule, counts in summary["by_rule"].items():
         parts = ", ".join(f"{catalog[f'severity.{s}']}: {n}" for s, n in counts.items())
         lines.append(f"    {rule} {catalog[f'rule.{rule}']}: {parts}")
@@ -200,7 +230,7 @@ def format_text(
         percent = format_value(round(summary["ready_ratio"] * 100, 1), language)
         params = {"ready": summary["ready_stories"], "stories": summary["stories"]}
         lines.append("    " + render("report.ready", {**params, "percent": percent}, language))
-    return "\n".join(lines) + "\n"
+    return lines
 
 
 def field_excerpt(item: Item, finding: Finding) -> str | None:
@@ -216,7 +246,99 @@ def field_excerpt(item: Item, finding: Finding) -> str | None:
     return text[start:end]
 
 
-FORMATTERS = {"json": format_json, "csv": format_csv, "text": format_text}
+def format_markdown(report: Report) -> str:
+    language, summary = report.language, report.summary
+    catalog = load_catalog(language)
+    lines = ["# backlog-check", "", render("report.header", summary, language), ""]
+    if report.findings:
+        columns = ("item", "severity", "rule", "finding", "field")
+        lines.append("| " + " | ".join(catalog[f"report.column_{c}"] for c in columns) + " |")
+        lines.append("|" + " --- |" * len(columns))
+        for finding in report.findings:
+            cells = [
+                finding.item,
+                catalog[f"severity.{finding.severity}"],
+                f"{finding.rule} {catalog[f'rule.{finding.rule}']}",
+                render(finding.message_key, finding.params, language),
+                f"`{finding.field}`" if finding.field else "",
+            ]
+            lines.append("| " + " | ".join(c.replace("|", "\\|") for c in cells) + " |")
+    else:
+        lines.append(catalog["report.no_findings"])
+    lines += ["", f"## {catalog['report.summary']}", ""]
+    lines += [f"- {line.strip()}" for line in _summary_lines(summary, catalog, language)]
+    return "\n".join(lines) + "\n"
+
+
+def format_sarif(report: Report) -> str:
+    """SARIF 2.1.0 for code platforms; each finding points to the line of its item."""
+    catalog = load_catalog(report.language)
+    by_id = {item.id: item for item in report.items}
+    rules = [
+        {
+            "id": rule,
+            "name": catalog[f"rule.{rule}"],
+            "shortDescription": {"text": catalog[f"rule.{rule}"]},
+            "defaultConfiguration": {
+                "level": SARIF_LEVELS[report.config.rules[rule].severity],
+                "enabled": report.config.rules[rule].enabled,
+            },
+        }
+        for rule in RULE_IDS
+    ]
+    uri = Path(report.source).as_posix()
+    results = []
+    for finding in report.findings:
+        location: dict[str, Any] = {"artifactLocation": {"uri": uri}}
+        line = by_id[finding.item].line
+        if line is not None:
+            location["region"] = {"startLine": line}
+        data = finding.to_dict()
+        results.append(
+            {
+                "ruleId": finding.rule,
+                "ruleIndex": RULE_IDS.index(finding.rule),
+                "level": SARIF_LEVELS[finding.severity],
+                "message": {"text": render(finding.message_key, finding.params, report.language)},
+                "locations": [
+                    {
+                        "physicalLocation": location,
+                        "logicalLocations": [{"name": finding.item, "kind": "object"}],
+                    }
+                ],
+                "properties": {
+                    key: data[key]
+                    for key in ("item", "related", "field", "span", "message_key", "params")
+                },
+            }
+        )
+    sarif = {
+        "$schema": SARIF_SCHEMA,
+        "version": "2.1.0",
+        "runs": [
+            {
+                "tool": {
+                    "driver": {
+                        "name": "backlog-check",
+                        "version": __version__,
+                        "informationUri": PROJECT_URL,
+                        "rules": rules,
+                    }
+                },
+                "results": results,
+            }
+        ],
+    }
+    return json.dumps(sarif, ensure_ascii=False, indent=2) + "\n"
+
+
+FORMATTERS = {
+    "json": format_json,
+    "csv": format_csv,
+    "text": format_text,
+    "markdown": format_markdown,
+    "sarif": format_sarif,
+}
 
 
 if __name__ == "__main__":  # pragma: no cover
