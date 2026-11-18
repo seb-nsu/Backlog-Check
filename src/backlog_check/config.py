@@ -204,6 +204,25 @@ DEFAULT_REPRO_PATTERNS: dict[str, list[str]] = {
     "en": [r"\bsteps?\b", r"\brepro", r"(?m)^\s*1[.)]\s"],
 }
 
+# Suggestions for BC-02: vague word (case-folded) -> measurable wording to replace it with.
+# Placeholders in angle brackets are left for the author to fill in.
+DEFAULT_MEASURABLE_HINTS: dict[str, dict[str, str]] = {
+    "de": {
+        "schnell": "in höchstens <n> Sekunden",
+        "einfach": "mit höchstens <n> Klicks",
+        "benutzerfreundlich": "<n> von <m> Testpersonen schaffen es ohne Hilfe",
+        "möglichst": "mindestens <n> %",
+        "etc.": "eine vollständige Liste der Fälle",
+        "fast": "zu mindestens <n> %",
+    },
+    "en": {
+        "fast": "within <n> seconds",
+        "easy": "in at most <n> clicks",
+        "user-friendly": "<n> of <m> test users succeed without help",
+        "etc.": "a complete list of the cases",
+    },
+}
+
 DEFAULT_DONE_STATUSES = ("done", "closed", "erledigt", "abgeschlossen")
 
 
@@ -273,6 +292,9 @@ class Config:
     )
     repro_patterns: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_REPRO_PATTERNS)
+    )
+    measurable_hints: Mapping[str, Mapping[str, str]] = field(
+        default_factory=lambda: {lang: dict(h) for lang, h in DEFAULT_MEASURABLE_HINTS.items()}
     )
     reference_date: str | None = None
     stale_days: int = 180
@@ -378,18 +400,24 @@ def _per_language(key: str, defaults: Mapping[str, list[str]], check_regex: bool
     return parse
 
 
-def _parse_units(value: Any) -> dict[str, dict[str, str]]:
-    if not isinstance(value, Mapping) or set(value) - set(LANGUAGES):
-        raise _invalid("units", value)
-    result = {lang: dict(units) for lang, units in DEFAULT_UNITS.items()}
-    for lang in sorted(value):
-        units = value[lang]
-        if not isinstance(units, Mapping) or not all(
-            isinstance(k, str) and k and isinstance(v, str) and v for k, v in units.items()
-        ):
-            raise _invalid(f"units.{lang}", units)
-        result[lang] = {k.casefold(): v for k, v in units.items()}
-    return result
+def _word_table(key: str, defaults: Mapping[str, Mapping[str, str]]):
+    def parse(value: Any) -> dict[str, dict[str, str]]:
+        if not isinstance(value, Mapping) or set(value) - set(LANGUAGES):
+            raise _invalid(key, value)
+        result = {lang: dict(table) for lang, table in defaults.items()}
+        for lang in sorted(value):
+            table = value[lang]
+            if not isinstance(table, Mapping) or not all(
+                isinstance(k, str) and k and isinstance(v, str) and v for k, v in table.items()
+            ):
+                raise _invalid(f"{key}.{lang}", table)
+            result[lang] = {k.casefold(): v for k, v in table.items()}
+        return result
+
+    return parse
+
+
+_parse_units = _word_table("units", DEFAULT_UNITS)
 
 
 def _parse_unit_conversions(value: Any) -> dict[str, tuple[str, float]]:
@@ -468,6 +496,7 @@ _PARSERS = {
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
     "similarity_stopwords": _per_language("similarity_stopwords", DEFAULT_SIMILARITY_STOPWORDS),
     "repro_patterns": _per_language("repro_patterns", DEFAULT_REPRO_PATTERNS, True),
+    "measurable_hints": _word_table("measurable_hints", DEFAULT_MEASURABLE_HINTS),
     "reference_date": _parse_reference_date,
     "stale_days": _number("stale_days", 0, integer=True),
     "epic_goal_min_words": _number("epic_goal_min_words", 0, integer=True),

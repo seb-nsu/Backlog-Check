@@ -1,0 +1,1110 @@
+{
+  "cases": [
+    {
+      "name": "BC-01-de-1",
+      "rule": "BC-01",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung herunterladen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Rechnung leer"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-01",
+          "item": "DE-1",
+          "field": "acceptance_criteria",
+          "message_key": "bc01.fix_missing",
+          "params": {}
+        },
+        {
+          "rule": "BC-01",
+          "item": "DE-2",
+          "field": "acceptance_criteria",
+          "message_key": "bc01.fix_missing_bug",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "BC-01-en-1",
+      "rule": "BC-01",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Download invoice"
+        },
+        {
+          "id": "EN-2",
+          "kind": "bug",
+          "title": "Invoice empty"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-01",
+          "item": "EN-1",
+          "field": "acceptance_criteria",
+          "message_key": "bc01.fix_missing",
+          "params": {}
+        },
+        {
+          "rule": "BC-01",
+          "item": "EN-2",
+          "field": "acceptance_criteria",
+          "message_key": "bc01.fix_missing_bug",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "BC-02-de-1",
+      "rule": "BC-02",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche",
+          "acceptance_criteria": [
+            "Die Suche ist schnell."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-02",
+          "item": "DE-1",
+          "field": "acceptance_criteria[0]",
+          "message_key": "bc02.fix_replace_word",
+          "params": {
+            "hint": "in höchstens <n> Sekunden",
+            "word": "schnell"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-02-de-2",
+      "rule": "BC-02",
+      "language": "de",
+      "config": {
+        "vague_words": {
+          "de": [
+            "zügig"
+          ]
+        }
+      },
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche",
+          "acceptance_criteria": [
+            "Die Suche ist zügig."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-02",
+          "item": "DE-1",
+          "field": "acceptance_criteria[0]",
+          "message_key": "bc02.fix_unmeasurable",
+          "params": {
+            "word": "zügig"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-02-en-1",
+      "rule": "BC-02",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Search",
+          "acceptance_criteria": [
+            "Search is fast and easy."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-02",
+          "item": "EN-1",
+          "field": "acceptance_criteria[0]",
+          "message_key": "bc02.fix_replace_word",
+          "params": {
+            "hint": "within <n> seconds",
+            "word": "fast"
+          }
+        },
+        {
+          "rule": "BC-02",
+          "item": "EN-1",
+          "field": "acceptance_criteria[0]",
+          "message_key": "bc02.fix_replace_word",
+          "params": {
+            "hint": "in at most <n> clicks",
+            "word": "easy"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-03-de-1",
+      "rule": "BC-03",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Import",
+          "estimate": 21
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Export",
+          "estimate": 40
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Druck",
+          "acceptance_criteria": [
+            "Kriterium 0",
+            "Kriterium 1",
+            "Kriterium 2",
+            "Kriterium 3",
+            "Kriterium 4",
+            "Kriterium 5",
+            "Kriterium 6",
+            "Kriterium 7",
+            "Kriterium 8"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-03",
+          "item": "DE-1",
+          "field": "estimate",
+          "message_key": "bc03.fix_split_estimate",
+          "params": {
+            "max_estimate": 13,
+            "parts": 2
+          }
+        },
+        {
+          "rule": "BC-03",
+          "item": "DE-2",
+          "field": "estimate",
+          "message_key": "bc03.fix_split_estimate",
+          "params": {
+            "max_estimate": 13,
+            "parts": 4
+          }
+        },
+        {
+          "rule": "BC-03",
+          "item": "DE-3",
+          "field": "acceptance_criteria",
+          "message_key": "bc03.fix_split_criteria",
+          "params": {
+            "max_criteria": 8,
+            "parts": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-03-en-1",
+      "rule": "BC-03",
+      "language": "en",
+      "config": {
+        "max_criteria": 2
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print",
+          "acceptance_criteria": [
+            "One",
+            "Two",
+            "Three",
+            "Four",
+            "Five"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Scan",
+          "estimate": 13.5
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-03",
+          "item": "EN-1",
+          "field": "acceptance_criteria",
+          "message_key": "bc03.fix_split_criteria",
+          "params": {
+            "max_criteria": 2,
+            "parts": 3
+          }
+        },
+        {
+          "rule": "BC-03",
+          "item": "EN-2",
+          "field": "estimate",
+          "message_key": "bc03.fix_split_estimate",
+          "params": {
+            "max_estimate": 13,
+            "parts": 2
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-04-de-1",
+      "rule": "BC-04",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung erstellen und versenden"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Ablage",
+          "description": "Als Kundin möchte ich Belege sammeln, damit ich sie prüfen und ablegen kann."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-04",
+          "item": "DE-1",
+          "field": "title",
+          "message_key": "bc04.fix_split_title",
+          "params": {
+            "first": "Rechnung erstellen",
+            "second": "Rechnung versenden"
+          }
+        },
+        {
+          "rule": "BC-04",
+          "item": "DE-2",
+          "field": "description",
+          "message_key": "bc04.fix_split",
+          "params": {
+            "word": "und"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-04-en-1",
+      "rule": "BC-04",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Export and print report"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "and print report"
+        },
+        {
+          "id": "EN-3",
+          "kind": "story",
+          "title": "Import data and validate"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-04",
+          "item": "EN-1",
+          "field": "title",
+          "message_key": "bc04.fix_split_title",
+          "params": {
+            "first": "Export report",
+            "second": "print report"
+          }
+        },
+        {
+          "rule": "BC-04",
+          "item": "EN-2",
+          "field": "title",
+          "message_key": "bc04.fix_split",
+          "params": {
+            "word": "and"
+          }
+        },
+        {
+          "rule": "BC-04",
+          "item": "EN-3",
+          "field": "title",
+          "message_key": "bc04.fix_split_title",
+          "params": {
+            "first": "Import data",
+            "second": "validate data"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-05-de-1",
+      "rule": "BC-05",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Profilbild ändern",
+          "description": "Als Nutzer möchte ich mein Profilbild ändern."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-05",
+          "item": "DE-1",
+          "field": "description",
+          "message_key": "bc05.fix_add_benefit",
+          "params": {
+            "title": "Profilbild ändern"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-05-en-1",
+      "rule": "BC-05",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Change avatar",
+          "description": "As a user I want to change my avatar."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-05",
+          "item": "EN-1",
+          "field": "description",
+          "message_key": "bc05.fix_add_benefit",
+          "params": {
+            "title": "Change avatar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-06-de-1",
+      "rule": "BC-06",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche",
+          "rank": 1
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-06",
+          "item": "DE-1",
+          "field": "estimate",
+          "message_key": "bc06.fix_estimate",
+          "params": {
+            "max_estimate": 13
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-06-en-1",
+      "rule": "BC-06",
+      "language": "en",
+      "config": {
+        "max_estimate": 8
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Search",
+          "rank": 3
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-06",
+          "item": "EN-1",
+          "field": "estimate",
+          "message_key": "bc06.fix_estimate",
+          "params": {
+            "max_estimate": 8
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-07-de-1",
+      "rule": "BC-07",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche nutzt DE-2"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Index"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-07",
+          "item": "DE-1",
+          "field": "title",
+          "message_key": "bc07.fix_add_dependency",
+          "params": {
+            "id": "DE-2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-07-en-1",
+      "rule": "BC-07",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Search uses EN-2"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Index"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-07",
+          "item": "EN-1",
+          "field": "title",
+          "message_key": "bc07.fix_add_dependency",
+          "params": {
+            "id": "EN-2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-08-de-1",
+      "rule": "BC-08",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche",
+          "rank": 1,
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Index",
+          "rank": 2
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Filter",
+          "priority": "must",
+          "depends_on": [
+            "DE-4"
+          ]
+        },
+        {
+          "id": "DE-4",
+          "kind": "story",
+          "title": "Facetten",
+          "priority": "could"
+        },
+        {
+          "id": "DE-5",
+          "kind": "story",
+          "title": "Export",
+          "rank": 3,
+          "priority": "must",
+          "depends_on": [
+            "DE-6"
+          ]
+        },
+        {
+          "id": "DE-6",
+          "kind": "story",
+          "title": "Format",
+          "rank": 4,
+          "priority": "should"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-08",
+          "item": "DE-1",
+          "field": "depends_on[0]",
+          "message_key": "bc08.fix_rank_order",
+          "params": {
+            "dependency": "DE-2",
+            "dependency_rank": 2,
+            "rank": 1
+          }
+        },
+        {
+          "rule": "BC-08",
+          "item": "DE-3",
+          "field": "depends_on[0]",
+          "message_key": "bc08.fix_priority_order",
+          "params": {
+            "dependency": "DE-4",
+            "dependency_priority": "could",
+            "priority": "must"
+          }
+        },
+        {
+          "rule": "BC-08",
+          "item": "DE-5",
+          "field": "depends_on[0]",
+          "message_key": "bc08.fix_rank_and_priority_order",
+          "params": {
+            "dependency": "DE-6",
+            "dependency_priority": "should",
+            "dependency_rank": 4,
+            "priority": "must",
+            "rank": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-08-en-1",
+      "rule": "BC-08",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Search",
+          "rank": 1,
+          "depends_on": [
+            "EN-2"
+          ]
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Index",
+          "rank": 2
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-08",
+          "item": "EN-1",
+          "field": "depends_on[0]",
+          "message_key": "bc08.fix_rank_order",
+          "params": {
+            "dependency": "EN-2",
+            "dependency_rank": 2,
+            "rank": 1
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-09-de-1",
+      "rule": "BC-09",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "A",
+          "depends_on": [
+            "DE-2"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "B",
+          "depends_on": [
+            "DE-1"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-09",
+          "item": "DE-1",
+          "field": "depends_on",
+          "message_key": "bc09.fix_break_cycle",
+          "params": {
+            "items": [
+              "DE-1",
+              "DE-2"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-09-en-1",
+      "rule": "BC-09",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "A",
+          "depends_on": [
+            "EN-1"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-09",
+          "item": "EN-1",
+          "field": "depends_on",
+          "message_key": "bc09.fix_break_cycle",
+          "params": {
+            "items": [
+              "EN-1"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-10-de-1",
+      "rule": "BC-10",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Rechnung als PDF herunterladen"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "item": "DE-2",
+          "field": null,
+          "message_key": "bc10.fix_merge",
+          "params": {
+            "other": "DE-1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-10-en-1",
+      "rule": "BC-10",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Download invoice as PDF"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Download invoice as PDF"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-10",
+          "item": "EN-2",
+          "field": null,
+          "message_key": "bc10.fix_merge",
+          "params": {
+            "other": "EN-1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-11-de-1",
+      "rule": "BC-11",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Mahnung",
+          "description": "Die Frist beträgt 5 Tage."
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Erinnerung",
+          "description": "Die Frist beträgt 10 Tage."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "item": "DE-2",
+          "field": "description",
+          "message_key": "bc11.fix_align",
+          "params": {
+            "other": "DE-1",
+            "term": "Frist"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-11-en-1",
+      "rule": "BC-11",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Reminder",
+          "description": "The deadline is 5 days."
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "Notice",
+          "description": "The deadline is 10 days."
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-11",
+          "item": "EN-2",
+          "field": "description",
+          "message_key": "bc11.fix_align",
+          "params": {
+            "other": "EN-1",
+            "term": "deadline"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-12-de-1",
+      "rule": "BC-12",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-E1",
+          "kind": "epic",
+          "title": "Rechnung verwalten",
+          "description": "Alles rund um die Rechnung"
+        },
+        {
+          "id": "DE-E2",
+          "kind": "epic",
+          "title": "Profil pflegen",
+          "status": "done"
+        },
+        {
+          "id": "DE-E3",
+          "kind": "epic",
+          "title": "Suche"
+        },
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung herunterladen"
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Profil ändern"
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Suche verbessern",
+          "parent": "DE-E3"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-12",
+          "item": "DE-E1",
+          "field": null,
+          "message_key": "bc12.fix_add_stories",
+          "params": {}
+        },
+        {
+          "rule": "BC-12",
+          "item": "DE-1",
+          "field": "parent",
+          "message_key": "bc12.fix_assign_epic_candidate",
+          "params": {
+            "epic": "DE-E1"
+          }
+        },
+        {
+          "rule": "BC-12",
+          "item": "DE-2",
+          "field": "parent",
+          "message_key": "bc12.fix_assign_epic",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "BC-12-en-1",
+      "rule": "BC-12",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-E1",
+          "kind": "epic",
+          "title": "the"
+        },
+        {
+          "id": "EN-E2",
+          "kind": "epic",
+          "title": "Invoices",
+          "description": "Everything about invoices"
+        },
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "a",
+          "parent": "EN-E2"
+        },
+        {
+          "id": "EN-2",
+          "kind": "story",
+          "title": "the"
+        },
+        {
+          "id": "EN-3",
+          "kind": "story",
+          "title": "Download invoices as PDF"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-12",
+          "item": "EN-E1",
+          "field": null,
+          "message_key": "bc12.fix_add_stories",
+          "params": {}
+        },
+        {
+          "rule": "BC-12",
+          "item": "EN-2",
+          "field": "parent",
+          "message_key": "bc12.fix_assign_epic",
+          "params": {}
+        },
+        {
+          "rule": "BC-12",
+          "item": "EN-3",
+          "field": "parent",
+          "message_key": "bc12.fix_assign_epic_candidate",
+          "params": {
+            "epic": "EN-E2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-13-de-1",
+      "rule": "BC-13",
+      "language": "de",
+      "config": {
+        "reference_date": "2026-11-18"
+      },
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Suche",
+          "updated": "2025-01-01"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-13",
+          "item": "DE-1",
+          "field": "updated",
+          "message_key": "bc13.fix_review",
+          "params": {
+            "updated": "2025-01-01"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-13-en-1",
+      "rule": "BC-13",
+      "language": "en",
+      "config": {
+        "reference_date": "2026-11-18"
+      },
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Search",
+          "updated": "2025-01-01"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-13",
+          "item": "EN-1",
+          "field": "updated",
+          "message_key": "bc13.fix_review",
+          "params": {
+            "updated": "2025-01-01"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-14-de-1",
+      "rule": "BC-14",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "bug",
+          "title": "Absturz beim Speichern"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-14",
+          "item": "DE-1",
+          "field": "description",
+          "message_key": "bc14.fix_add_steps",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "BC-14-en-1",
+      "rule": "BC-14",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "bug",
+          "title": "Crash on save"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-14",
+          "item": "EN-1",
+          "field": "description",
+          "message_key": "bc14.fix_add_steps",
+          "params": {}
+        }
+      ]
+    },
+    {
+      "name": "BC-15-de-1",
+      "rule": "BC-15",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-E1",
+          "kind": "epic",
+          "title": "Rechnungen",
+          "description": "Rechnungen"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-15",
+          "item": "DE-E1",
+          "field": "description",
+          "message_key": "bc15.fix_add_goal",
+          "params": {
+            "min_words": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-15-en-1",
+      "rule": "BC-15",
+      "language": "en",
+      "config": {
+        "epic_goal_min_words": 8
+      },
+      "items": [
+        {
+          "id": "EN-E1",
+          "kind": "epic",
+          "title": "Invoices"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-15",
+          "item": "EN-E1",
+          "field": "description",
+          "message_key": "bc15.fix_add_goal",
+          "params": {
+            "min_words": 8
+          }
+        }
+      ]
+    }
+  ]
+}
