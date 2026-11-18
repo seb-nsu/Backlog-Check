@@ -71,6 +71,26 @@ backlog-check backlog.csv --format sarif             # SARIF 2.1.0 für Code-Pla
 backlog-check backlog.csv --reference-date 2026-11-12  # Stichtag für BC-13
 ```
 
+### Stories verbessern und neu anlegen
+
+Mit `--suggest` steht unter jedem Befund ein konkreter Vorschlag, wie er sich beheben lässt, in jedem Format (Text, Markdown, JSON, CSV, SARIF):
+
+```
+S-7  Warnung  BC-02 Kriterium nicht prüfbar
+    Das Kriterium enthält „schnell“, aber weder Zahl noch Maßeinheit, und ist so nicht prüfbar.
+    (Feld acceptance_criteria[0]; Textstelle „schnell“)
+    Vorschlag: Ersetze „schnell“ durch einen Messwert, z. B. „in höchstens <n> Sekunden“.
+```
+
+Die Vorschläge nutzen den Eintrag selbst: Bei BC-04 werden aus „Rechnung erstellen und versenden“ die Titel „Rechnung erstellen“ und „Rechnung versenden“, bei BC-12 wird das Epic mit den meisten gemeinsamen Wörtern genannt. Ohne `--suggest` bleibt die Ausgabe unverändert.
+
+`--template story` (ebenso `bug`, `epic`) gibt einen neuen Eintrag mit Platzhaltern als JSON aus: Nutzensatz „Als <Rolle> möchte ich …, damit …“, Kriterien nach „Gegeben … wenn … dann …“ mit Sonderfall und Messwert; Bugs mit Schritten zum Nachstellen, Epics mit Ziel. Ausgefüllt besteht die Vorlage die Regeln.
+
+```
+backlog-check --template story --output neue-story.json
+backlog-check backlog.csv --suggest --format markdown
+```
+
 Die Presets übernehmen Kennung, Art, Titel, Beschreibung, Akzeptanzkriterien, Schätzung, Status, Epic und (Jira) das Änderungsdatum. Priorität, Rang und Verknüpfungen passen nicht ins Eingabeformat und werden nicht übernommen; bei Bedarf mit `--map` ergänzen. Tasks gelten als Story, Azure-DevOps-Features als Epic.
 
 Rückgabewert: `0` ohne Befund der Schwere `error`, `1` mit, `2` bei ungültiger Eingabe oder Konfiguration (mit Zeilenangabe).
@@ -85,6 +105,12 @@ findings = check(items, {"language": "de", "max_estimate": 8})
 for finding in findings:
     print(finding.item, finding.rule, render(finding.message_key, finding.params, "de"))
 print(summarize(items, findings))
+
+from backlog_check import suggest, template
+
+for hint in suggest(items, findings, {"language": "de", "max_estimate": 8}):
+    print(hint.item, hint.rule, render(hint.message_key, hint.params, "de"))
+print(template("story", "de"))
 ```
 
 `check()` nimmt auch eine Liste von Wörterbüchern im Eingabeformat. Befunde enthalten keine fertigen Sätze, sondern `message_key` und `params`; die mitgelieferten Kataloge (`render`) gibt es auf Deutsch und Englisch.
@@ -137,7 +163,7 @@ Eine JSON-Datei (`--config`); jeder Wert ist optional:
 
 Ein Eintrag in `ignore` als Liste unterdrückt alle Befunde der Regel am Eintrag; als Objekt mit `field` oder `related` genau einen.
 
-`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
+`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `measurable_hints` (Ersatz je vagem Wort für die Vorschläge zu BC-02), `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
 
 ---
 
@@ -163,7 +189,11 @@ backlog-check jira-export.csv --preset jira         # ready-made mapping (also a
 backlog-check backlog.csv --format markdown         # report for wiki pages
 backlog-check backlog.csv --format sarif            # SARIF 2.1.0 for code platforms
 backlog-check backlog.csv --reference-date 2026-11-12  # reference date for BC-13
+backlog-check backlog.csv --lang en --suggest       # add an improvement suggestion to each finding
+backlog-check --template story --lang en            # new story with placeholders as JSON (also bug, epic)
 ```
+
+`--suggest` adds a concrete suggestion to every finding in every format, built from the item itself (e.g. BC-04 turns "Export and print report" into "Export report" and "print report"). Without it the output is unchanged. In Python: `suggest(items, findings, config)` returns one `Suggestion` (`message_key`, `params`) per finding; `template(kind, language)` returns a new item.
 
 Exit code: `0` without a finding of severity `error`, `1` with one, `2` for invalid input or configuration (with line number).
 

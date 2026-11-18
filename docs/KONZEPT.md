@@ -116,9 +116,19 @@ Ein Objekt mit Standardwerten; jeder Wert ist überschreibbar.
 | `reference_date` | leer; Stichtag für BC-13 (`YYYY-MM-DD`) |
 | `stale_days` | 180 |
 | `epic_goal_min_words` | 5 |
+| `measurable_hints` | Je Sprache: vages Wort → messbare Formulierung für die Vorschläge zu BC-02, erweiterbar |
 | `activity_patterns`, `similarity_stopwords`, `unit_conversions`, `repro_patterns` | Wortlisten und Muster je Sprache bzw. Umrechnungstabelle, erweiterbar |
 
 Die Kommandozeile liest die Konfiguration aus einer JSON-Datei (`--config`).
+
+## Verbesserungsvorschläge und Vorlagen
+
+Ergänzung vom 18.11.2026. `backlog-check` hilft auch beim Beheben und Neuanlegen, weiterhin ohne KI und deterministisch:
+
+- `suggest(items, findings, config) -> suggestions`: je Befund ein Vorschlag, in derselben Reihenfolge, mit `rule`, `item`, `field`, `message_key` (z. B. `bc02.fix_replace_word`) und `params`. Wie bei Befunden kein fertiger Satz; die Texte stehen in den Katalogen.
+- Die Vorschläge nutzen den Eintrag: BC-02 nennt eine messbare Formulierung aus `measurable_hints`, BC-03 die Zahl der Teile, BC-04 die beiden Titel nach der Teilung, BC-12 das Epic mit den meisten gemeinsamen Wörtern.
+- `template(kind, language)`: ein neuer Eintrag mit Platzhaltern (Nutzensatz, Kriterien nach „Gegeben … wenn … dann …“, Schritte zum Nachstellen, Ziel des Epics), der die Regeln besteht.
+- Kommandozeile: `--suggest` ergänzt jedes Format um die Vorschläge (JSON: Liste `suggestions` neben `findings`; CSV: Spalten `suggestion_key`, `suggestion_params`, `suggestion`; SARIF: `properties.suggestion`). `--template story|bug|epic` gibt die Vorlage als JSON aus. Ohne diese Optionen bleibt die Ausgabe byteweise wie bisher.
 
 ## Kommandozeile
 
@@ -131,6 +141,8 @@ backlog-check jira-export.csv --preset jira      # fertige Zuordnung für Jira (
 backlog-check backlog.csv --format markdown      # Bericht für Wiki-Seiten
 backlog-check backlog.csv --format sarif         # SARIF 2.1.0 für Code-Plattformen
 backlog-check backlog.csv --reference-date 2026-11-12
+backlog-check backlog.csv --suggest              # Befunde mit Verbesserungsvorschlag
+backlog-check --template story --lang en         # neue Story mit Platzhaltern als JSON
 ```
 
 Rückgabewert: 0 ohne Befund der Schwere `error`, 1 mit, 2 bei ungültiger Eingabe. Damit lässt sich die Prüfung in eine CI einbauen.

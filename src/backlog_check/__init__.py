@@ -6,6 +6,7 @@ from .engine import check, to_items
 from .errors import BacklogCheckError, ConfigError, InputError
 from .model import Finding, Item
 from .reader import load_csv, load_file, load_json
+from .suggest import Suggestion, suggest, template
 from .summary import summarize
 
 __version__ = "0.1.0"
@@ -17,12 +18,15 @@ __all__ = [
     "Finding",
     "InputError",
     "Item",
+    "Suggestion",
     "__version__",
     "check",
     "load_csv",
     "load_file",
     "load_json",
     "render",
+    "suggest",
     "summarize",
+    "template",
     "to_items",
 ]

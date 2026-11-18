@@ -1,4 +1,6 @@
-"""Command line: ``backlog-check FILE [--format text|json|csv] [--lang de|en] ...``.
+"""Command line: ``backlog-check FILE [--format text|json|csv] [--lang de|en] [--suggest] ...``.
+
+``backlog-check --template story|bug|epic`` prints a new item with placeholders instead.
 
 Exit codes: 0 without a finding of severity error, 1 with one, 2 for invalid input or
 configuration.
@@ -22,9 +24,10 @@ from .catalog import CATALOG_LANGUAGES, format_value, load_catalog, render
 from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
-from .model import RULE_IDS, Finding, Item
+from .model import KINDS, RULE_IDS, Finding, Item
 from .presets import PRESETS
 from .reader import FIELDS, load_file
+from .suggest import Suggestion, suggest, template
 from .summary import summarize
 
 EXIT_OK = 0
@@ -46,6 +49,7 @@ CSV_COLUMNS = (
     "params",
     "message",
 )
+SUGGESTION_COLUMNS = ("suggestion_key", "suggestion_params", "suggestion")
 LIST_INDEX = re.compile(r"^(\w+)\[(\d+)\]$")
 
 
@@ -59,13 +63,14 @@ class Report:
     language: str
     config: Config
     source: str
+    suggestions: Sequence[Suggestion] | None = None  # one per finding, only with --suggest
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="backlog-check", description="Check a backlog against the rules BC-01 to BC-15."
     )
-    parser.add_argument("file", help="backlog as .csv or .json")
+    parser.add_argument("file", nargs="?", help="backlog as .csv or .json")
     parser.add_argument("--format", choices=FORMATS, default="text", help="output format")
     parser.add_argument(
         "--lang", choices=CATALOG_LANGUAGES, default="de", help="language of the report"
@@ -88,13 +93,28 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="YYYY-MM-DD",
         help="reference date for BC-13 (stale items), unless the configuration sets one",
     )
+    parser.add_argument(
+        "--suggest", action="store_true", help="add an improvement suggestion to each finding"
+    )
+    parser.add_argument(
+        "--template",
+        choices=KINDS,
+        help="print a new item of this kind with placeholders (JSON) instead of checking",
+    )
     parser.add_argument("--output", help="write the result to this file instead of stdout")
     return parser
 
 
 def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int:
     stdout = stdout or sys.stdout
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if args.template is not None:
+        output = json.dumps([template(args.template, args.lang)], ensure_ascii=False, indent=2)
+        _write_output(output + "\n", args.output, stdout)
+        return EXIT_OK
+    if args.file is None:
+        parser.error("the following arguments are required: file")
     try:
         config = _load_config(args.config, args.lang, args.reference_date)
         mapping = _parse_mapping(args.map)
@@ -110,13 +130,17 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
         return EXIT_INVALID
     findings = check(items, config)
     summary = summarize(items, findings, config)
-    report = Report(items, findings, summary, args.lang, config, args.file)
-    output = FORMATTERS[args.format](report)
-    if args.output:
-        Path(args.output).write_text(output, encoding="utf-8", newline="")
+    suggestions = suggest(items, findings, config) if args.suggest else None
+    report = Report(items, findings, summary, args.lang, config, args.file, suggestions)
+    _write_output(FORMATTERS[args.format](report), args.output, stdout)
+    return EXIT_ERRORS if summary["by_severity"]["error"] else EXIT_OK
+
+
+def _write_output(output: str, path: str | None, stdout: TextIO) -> None:
+    if path:
+        Path(path).write_text(output, encoding="utf-8", newline="")
     else:
         stdout.write(output)
-    return EXIT_ERRORS if summary["by_severity"]["error"] else EXIT_OK
 
 
 def _load_config(path: str | None, language: str, reference_date: str | None = None) -> Config:
@@ -159,16 +183,28 @@ def format_error(error: BacklogCheckError, language: str) -> str:
 
 
 def format_json(report: Report) -> str:
-    data = {"findings": [f.to_dict() for f in report.findings], "summary": report.summary}
+    data: dict[str, Any] = {"findings": [f.to_dict() for f in report.findings]}
+    if report.suggestions is not None:
+        data["suggestions"] = [s.to_dict() for s in report.suggestions]
+    data["summary"] = report.summary
     return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
 
 def format_csv(report: Report) -> str:
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator="\n")
-    writer.writerow(CSV_COLUMNS)
-    for finding in report.findings:
+    with_suggestions = report.suggestions is not None
+    writer.writerow(CSV_COLUMNS + (SUGGESTION_COLUMNS if with_suggestions else ()))
+    for index, finding in enumerate(report.findings):
         span = finding.span or ("", "")
+        extra = []
+        if report.suggestions is not None:
+            hint = report.suggestions[index]
+            extra = [
+                hint.message_key,
+                json.dumps(hint.to_dict()["params"], ensure_ascii=False),
+                render(hint.message_key, hint.params, report.language),
+            ]
         writer.writerow(
             [
                 finding.rule,
@@ -181,6 +217,7 @@ def format_csv(report: Report) -> str:
                 finding.message_key,
                 json.dumps(finding.to_dict()["params"], ensure_ascii=False),
                 render(finding.message_key, finding.params, report.language),
+                *extra,
             ]
         )
     return buffer.getvalue()
@@ -198,7 +235,7 @@ def format_text(report: Report) -> str:
     lines = [render("report.header", summary, language), ""]
     if not findings:
         lines += [catalog["report.no_findings"], ""]
-    for finding in findings:
+    for index, finding in enumerate(findings):
         rule_title = catalog[f"rule.{finding.rule}"]
         severity = catalog[f"severity.{finding.severity}"]
         lines.append(f"{finding.item}  {severity}  {finding.rule} {rule_title}")
@@ -213,10 +250,17 @@ def format_text(report: Report) -> str:
             details.append(render("report.related", {"related": list(finding.related)}, language))
         if details:
             lines.append("    (" + "; ".join(details) + ")")
+        if report.suggestions is not None:
+            lines.append("    " + _suggestion_text(report.suggestions[index], language))
         lines.append("")
     lines.append(catalog["report.summary"])
     lines += _summary_lines(summary, catalog, language)
     return "\n".join(lines) + "\n"
+
+
+def _suggestion_text(suggestion: Suggestion, language: str) -> str:
+    text = render(suggestion.message_key, suggestion.params, language)
+    return render("report.suggestion", {"text": text}, language)
 
 
 def _summary_lines(summary: dict[str, Any], catalog: dict[str, str], language: str) -> list[str]:
@@ -252,9 +296,11 @@ def format_markdown(report: Report) -> str:
     lines = ["# backlog-check", "", render("report.header", summary, language), ""]
     if report.findings:
         columns = ("item", "severity", "rule", "finding", "field")
+        if report.suggestions is not None:
+            columns += ("suggestion",)
         lines.append("| " + " | ".join(catalog[f"report.column_{c}"] for c in columns) + " |")
         lines.append("|" + " --- |" * len(columns))
-        for finding in report.findings:
+        for index, finding in enumerate(report.findings):
             cells = [
                 finding.item,
                 catalog[f"severity.{finding.severity}"],
@@ -262,6 +308,9 @@ def format_markdown(report: Report) -> str:
                 render(finding.message_key, finding.params, language),
                 f"`{finding.field}`" if finding.field else "",
             ]
+            if report.suggestions is not None:
+                hint = report.suggestions[index]
+                cells.append(render(hint.message_key, hint.params, language))
             lines.append("| " + " | ".join(c.replace("|", "\\|") for c in cells) + " |")
     else:
         lines.append(catalog["report.no_findings"])
@@ -288,12 +337,22 @@ def format_sarif(report: Report) -> str:
     ]
     uri = Path(report.source).as_posix()
     results = []
-    for finding in report.findings:
+    for index, finding in enumerate(report.findings):
         location: dict[str, Any] = {"artifactLocation": {"uri": uri}}
         line = by_id[finding.item].line
         if line is not None:
             location["region"] = {"startLine": line}
         data = finding.to_dict()
+        properties = {
+            key: data[key] for key in ("item", "related", "field", "span", "message_key", "params")
+        }
+        if report.suggestions is not None:
+            hint = report.suggestions[index]
+            properties["suggestion"] = {
+                "message_key": hint.message_key,
+                "params": hint.to_dict()["params"],
+                "text": render(hint.message_key, hint.params, report.language),
+            }
         results.append(
             {
                 "ruleId": finding.rule,
@@ -306,10 +365,7 @@ def format_sarif(report: Report) -> str:
                         "logicalLocations": [{"name": finding.item, "kind": "object"}],
                     }
                 ],
-                "properties": {
-                    key: data[key]
-                    for key in ("item", "related", "field", "span", "message_key", "params")
-                },
+                "properties": properties,
             }
         )
     sarif = {

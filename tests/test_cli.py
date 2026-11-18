@@ -241,3 +241,56 @@ def test_reference_date_option(tmp_path):
     config = _write(tmp_path, "c.json", {"reference_date": "2026-02-01"})
     _, out = _run(path, "--format", "json", "--reference-date", "2026-11-12", "--config", config)
     assert json.loads(out)["findings"] == []
+
+
+def test_suggest_option_in_every_format(tmp_path):
+    path = _write(tmp_path, "b.json", WITH_ERROR)
+    hint_de = "Vorschlag: Ergänze das erwartete Verhalten als Kriterium"
+    _, out = _run(path, "--suggest")
+    assert "    " + hint_de in out
+    _, out = _run(path, "--suggest", "--format", "markdown")
+    assert "| Feld | Vorschlag |" in out and hint_de[11:] in out
+    _, out = _run(path, "--suggest", "--format", "json", "--lang", "en")
+    data = json.loads(out)
+    assert list(data) == ["findings", "suggestions", "summary"]
+    assert len(data["suggestions"]) == len(data["findings"])
+    assert data["suggestions"][1] == {
+        "rule": "BC-01",
+        "item": "S-2",
+        "field": "acceptance_criteria",
+        "message_key": "bc01.fix_missing_bug",
+        "params": {},
+    }
+    _, out = _run(path, "--suggest", "--format", "csv", "--lang", "en")
+    rows = list(csv.reader(io.StringIO(out)))
+    assert rows[0][-3:] == ["suggestion_key", "suggestion_params", "suggestion"]
+    assert rows[2][-3] == "bc01.fix_missing_bug" and rows[2][-1].startswith("Add the expected")
+    _, out = _run(path, "--suggest", "--format", "sarif")
+    results = json.loads(out)["runs"][0]["results"]
+    assert results[0]["properties"]["suggestion"]["message_key"] == "bc01.fix_missing_bug"
+
+
+def test_output_without_suggest_has_no_suggestions(tmp_path):
+    path = _write(tmp_path, "b.json", WITH_ERROR)
+    for fmt in ("json", "csv", "markdown", "sarif", "text"):
+        _, out = _run(path, "--format", fmt)
+        assert "suggestion" not in out.casefold() and "Vorschlag" not in out
+
+
+def test_template_option(tmp_path):
+    code, out = _run("--template", "story")
+    assert code == 0
+    [item] = json.loads(out)
+    assert item["description"] == "Als <Rolle> möchte ich <Tätigkeit>, damit <Nutzen>."
+    target = tmp_path / "bug.json"
+    code, _ = _run("--template", "bug", "--lang", "en", "--output", str(target))
+    assert code == 0
+    assert json.loads(target.read_text("utf-8"))[0]["id"] == "NEW-2"
+    assert _run(str(target), "--lang", "en")[0] == 0
+
+
+def test_missing_file_argument(capsys):
+    with pytest.raises(SystemExit) as info:
+        _run()
+    assert info.value.code == 2
+    assert "file" in capsys.readouterr().err
