@@ -6,7 +6,7 @@ Prüft einen Backlog gegen feste Regeln, bevor Stories in die Umsetzung gehen: f
 
 | Datei | Inhalt |
 | --- | --- |
-| [docs/KONZEPT.md](docs/KONZEPT.md) | Ein- und Ausgabeformat, die zwölf Regeln, Konfiguration, Akzeptanzkriterien |
+| [docs/KONZEPT.md](docs/KONZEPT.md) | Ein- und Ausgabeformat, die Regeln BC-01 bis BC-18, Konfiguration, Akzeptanzkriterien |
 | [docs/OFFENE-FRAGEN.md](docs/OFFENE-FRAGEN.md) | Lücken im Konzept und die bis zur Entscheidung getroffenen Annahmen |
 | [CLAUDE.md](CLAUDE.md) | Projektregeln für Claude Code |
 
@@ -69,6 +69,8 @@ backlog-check azure-export.csv --preset azure-devops # fertige Zuordnung für Az
 backlog-check backlog.csv --format markdown          # Bericht für Wiki-Seiten
 backlog-check backlog.csv --format sarif             # SARIF 2.1.0 für Code-Plattformen
 backlog-check backlog.csv --reference-date 2026-11-12  # Stichtag für BC-13
+backlog-check backlog.csv --fail-on warning          # schon Warnungen ergeben Rückgabewert 1
+backlog-check backlog.csv --fix --output neu.json    # Backlog mit angewendeten Korrekturen
 ```
 
 ### Stories verbessern und neu anlegen
@@ -212,7 +214,7 @@ Eine JSON-Datei (`--config`); jeder Wert ist optional:
 
 Ein Eintrag in `ignore` als Liste unterdrückt alle Befunde der Regel am Eintrag; als Objekt mit `field` oder `related` genau einen.
 
-`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `measurable_hints` (Ersatz je vagem Wort für die Vorschläge zu BC-02), `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
+`language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `placeholder_patterns` (BC-16), `custom_rules` (siehe unten), `measurable_hints` (Ersatz je vagem Wort für die Vorschläge zu BC-02), `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
 
 ### Eigene Regeln
 
@@ -274,6 +276,8 @@ backlog-check backlog.csv --format sarif            # SARIF 2.1.0 for code platf
 backlog-check backlog.csv --reference-date 2026-11-12  # reference date for BC-13
 backlog-check backlog.csv --lang en --suggest       # add an improvement suggestion to each finding
 backlog-check --template story --lang en            # new story with placeholders as JSON (also bug, epic)
+backlog-check backlog.csv --fail-on warning         # warnings also give exit code 1
+backlog-check backlog.csv --fix --output fixed.json # backlog with the mechanical fixes applied
 ```
 
 `--suggest` adds a concrete suggestion to every finding in every format, built from the item itself (e.g. BC-04 turns "Export and print report" into "Export report" and "print report"). Without it the output is unchanged. In Python: `suggest(items, findings, config)` returns one `Suggestion` (`message_key`, `params`) per finding; `template(kind, language)` returns a new item.

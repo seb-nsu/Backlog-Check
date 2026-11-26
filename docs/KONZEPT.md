@@ -1,6 +1,6 @@
 # Konzept: backlog-check
 
-**Stand:** 11.11.2026 · **Status:** freigegeben, noch nicht gebaut
+**Stand:** 26.11.2026 · **Status:** freigegeben, noch nicht gebaut
 
 ## Zweck
 
@@ -81,8 +81,11 @@ Dazu eine Zusammenfassung: Zahl der Einträge, Zahl der Befunde je Regel und Sch
 | BC-13 | Eintrag veraltet | `updated` liegt mehr als `stale_days` (Standard 180) vor dem Stichtag `reference_date`; ohne Stichtag läuft die Regel nicht | info |
 | BC-14 | Reproduktion fehlt | Bug, dessen Beschreibung keine Schritte zum Nachstellen enthält (Muster `repro_patterns`) | warning |
 | BC-15 | Ziel fehlt | Epic, dessen Beschreibung weniger als `epic_goal_min_words` Wörter hat (Standard 5) | info |
+| BC-16 | Platzhalter nicht ausgefüllt | Titel, Beschreibung oder Kriterium enthält noch einen Platzhalter wie „<Rolle>“, „TODO“, „TBD“, „FIXME“, „XXX“ oder „???“ (Muster `placeholder_patterns`) | warning |
+| BC-17 | Unbekannte Kennung | `depends_on` oder `parent` nennt eine Kennung, die es im Backlog nicht gibt | warning |
+| BC-18 | Doppeltes Kriterium | Ein Kriterium wiederholt ein früheres desselben Eintrags (ohne Unterschied in Groß-/Kleinschreibung, Leerraum und Satzzeichen am Ende) | info |
 
-BC-13 bis BC-15 kamen nach Freigabe der ersten Version auf Wunsch dazu (12.11.2026). Ebenso diese Schärfungen:
+BC-13 bis BC-15 kamen nach Freigabe der ersten Version auf Wunsch dazu (12.11.2026), BC-16 bis BC-18 am 26.11.2026. Ebenso diese Schärfungen:
 
 - BC-04 zählt eine Konjunktion nur, wenn direkt danach ein Verb steht (`activity_patterns`; Deutsch: kleingeschriebener Infinitiv, Englisch: Liste üblicher Verben).
 - BC-07 übergeht Nennungen von Einträgen, die vom geprüften Eintrag abhängen (Gegenrichtung).
@@ -118,6 +121,8 @@ Ein Objekt mit Standardwerten; jeder Wert ist überschreibbar.
 | `epic_goal_min_words` | 5 |
 | `measurable_hints` | Je Sprache: vages Wort → messbare Formulierung für die Vorschläge zu BC-02, erweiterbar |
 | `activity_patterns`, `similarity_stopwords`, `unit_conversions`, `repro_patterns` | Wortlisten und Muster je Sprache bzw. Umrechnungstabelle, erweiterbar |
+| `placeholder_patterns` | Muster je Sprache für BC-16, erweiterbar |
+| `custom_rules` | leer; eigene Regeln, siehe „Eigene Regeln“ |
 
 Die Kommandozeile liest die Konfiguration aus einer JSON-Datei (`--config`).
 
@@ -129,6 +134,16 @@ Ergänzung vom 18.11.2026. `backlog-check` hilft auch beim Beheben und Neuanlege
 - Die Vorschläge nutzen den Eintrag: BC-02 nennt eine messbare Formulierung aus `measurable_hints`, BC-03 die Zahl der Teile, BC-04 die beiden Titel nach der Teilung, BC-12 das Epic mit den meisten gemeinsamen Wörtern.
 - `template(kind, language)`: ein neuer Eintrag mit Platzhaltern (Nutzensatz, Kriterien nach „Gegeben … wenn … dann …“, Schritte zum Nachstellen, Ziel des Epics), der die Regeln besteht.
 - Kommandozeile: `--suggest` ergänzt jedes Format um die Vorschläge (JSON: Liste `suggestions` neben `findings`; CSV: Spalten `suggestion_key`, `suggestion_params`, `suggestion`; SARIF: `properties.suggestion`). `--template story|bug|epic` gibt die Vorlage als JSON aus. Ohne diese Optionen bleibt die Ausgabe byteweise wie bisher.
+
+## Erweiterungen vom 26.11.2026
+
+**Eigene Regeln** (`custom_rules`): Liste von Objekten mit `id` (z. B. `TEAM-01`, nicht `BC-`), `pattern` (regulärer Ausdruck), `mode` (`forbid`: darf nicht vorkommen, Standard; `require`: muss vorkommen), `fields` (`title`, `description`, `acceptance_criteria`), `kinds`, `severity`, `enabled` sowie den Texten `title`, `message` und optional `suggestion` je Sprache. Die Texte gehören dem Anwender und stehen deshalb in seiner Konfiguration, nicht im Paket; Befunde tragen weiterhin nur `message_key` (`custom.<id>`) und `params` (`text` bei `forbid`). `Config.texts(language)` liefert die Texte als Katalogergänzung für `render`. Eigene Regeln folgen in Zusammenfassung und SARIF auf die mitgelieferten und lassen sich mit `ignore` unterdrücken.
+
+**Vorschläge anwenden** (`apply_fixes(items, findings, config) -> (items, changes)`, Kommandozeile `--fix`): wendet nur Korrekturen ohne inhaltliche Entscheidung an, nämlich BC-04 (Titel teilen, neuer Eintrag `<id>-2`), BC-07 (Abhängigkeit eintragen), BC-12 (vorgeschlagenes Epic setzen) und BC-18 (doppeltes Kriterium streichen). Ergebnis ist der Backlog im Eingabeformat als JSON; die Änderungen tragen `message_key` (`fix.*`) und `params`.
+
+**Schwelle für den Rückgabewert** (`--fail-on error|warning|info|none`, Standard `error`).
+
+**GitHub Action** (`action.yml`, zusammengesetzte Action) und **pre-commit-Hook** (`.pre-commit-hooks.yaml`) zum Einbinden in andere Repositories.
 
 ## Kommandozeile
 
@@ -143,9 +158,11 @@ backlog-check backlog.csv --format sarif         # SARIF 2.1.0 für Code-Plattfo
 backlog-check backlog.csv --reference-date 2026-11-12
 backlog-check backlog.csv --suggest              # Befunde mit Verbesserungsvorschlag
 backlog-check --template story --lang en         # neue Story mit Platzhaltern als JSON
+backlog-check backlog.csv --fail-on warning      # schon Warnungen ergeben Rückgabewert 1
+backlog-check backlog.csv --fix --output neu.json # Backlog mit angewendeten Korrekturen
 ```
 
-Rückgabewert: 0 ohne Befund der Schwere `error`, 1 mit, 2 bei ungültiger Eingabe. Damit lässt sich die Prüfung in eine CI einbauen.
+Rückgabewert: 0 ohne Befund der Schwere `error` (mit `--fail-on`: der gewählten Schwere oder höher), 1 mit, 2 bei ungültiger Eingabe. Damit lässt sich die Prüfung in eine CI einbauen.
 
 ## Qualität
 
