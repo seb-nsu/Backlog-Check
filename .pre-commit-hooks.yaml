@@ -1,0 +1,7 @@
+- id: backlog-check
+  name: backlog-check
+  description: Check a backlog against the rules BC-01 to BC-18; name the file in args.
+  entry: backlog-check
+  language: python
+  pass_filenames: false
+  files: \.(csv|json)$

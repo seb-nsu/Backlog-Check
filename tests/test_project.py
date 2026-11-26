@@ -1,10 +1,12 @@
 """Project-level acceptance criteria: standard library only, README content."""
 
 import ast
+import re
 import sys
 import tomllib
 from pathlib import Path
 
+from backlog_check.cli import build_parser
 from backlog_check.model import RULE_IDS
 
 ROOT = Path(__file__).parent.parent
@@ -35,3 +37,16 @@ def test_readme_has_installation_example_and_rule_tables_in_both_languages():
     assert "## Regeln" in readme and "### Rules" in readme
     for rule in RULE_IDS:
         assert readme.count(f"| {rule} |") == 2
+
+
+def test_github_action_and_pre_commit_hook_use_existing_options():
+    options = {o for action in build_parser()._actions for o in action.option_strings}
+    action = (ROOT / "action.yml").read_text(encoding="utf-8")
+    command = action[action.index("cmd=(") :]
+    used = set(re.findall(r"(?<![\w-])--[a-z][a-z-]+", command))
+    assert used and used <= options
+    assert "using: composite" in action
+    hook = (ROOT / ".pre-commit-hooks.yaml").read_text(encoding="utf-8")
+    scripts = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    assert "entry: backlog-check" in hook
+    assert "backlog-check" in scripts["scripts"]

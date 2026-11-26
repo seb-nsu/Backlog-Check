@@ -15,7 +15,7 @@ Prüft einen Backlog gegen feste Regeln, bevor Stories in die Umsetzung gehen: f
 Python 3.11 oder neuer. Das Paket wird nicht auf PyPI veröffentlicht, sondern mit fester Version aus dem Repository installiert:
 
 ```
-pip install "git+https://github.com/seb-nsu/Backlog-Check@v0.1.0"
+pip install "git+https://github.com/seb-nsu/Backlog-Check@v0.2.0"
 ```
 
 Für die Entwicklung:
@@ -105,6 +105,37 @@ S-5  BC-18  Kriterium acceptance_criteria[2] gestrichen, es wiederholte acceptan
 ```
 
 Angewendet werden nur Korrekturen ohne inhaltliche Entscheidung: BC-04 (Titel teilen; der neue Eintrag übernimmt Art, Epic, Priorität und Status, Beschreibung und Kriterien bleiben beim alten), BC-07 (Abhängigkeit eintragen), BC-12 (Epic aus dem Vorschlag setzen, nur bei Stories ganz ohne `parent`) und BC-18 (doppeltes Kriterium streichen). Alles andere bleibt dem Autor überlassen; `--suggest` zeigt, wie. Die Eingabedatei wird nie überschrieben, außer man nennt sie bei `--output`. Rückgabewert `0`. In Python: `apply_fixes(items, findings, config)` gibt den Backlog als Liste und die Änderungen (`Change` mit `message_key`, `params`) zurück.
+
+### GitHub Action und pre-commit
+
+Als Schritt in einem GitHub-Workflow, z. B. mit SARIF-Upload in Code Scanning:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: seb-nsu/Backlog-Check@v0.2.0
+  with:
+    file: backlog.csv
+    config: backlog-check.json   # optional
+    format: sarif                # text, json, csv, markdown, sarif
+    output: backlog.sarif        # leer: Bericht im Log
+    fail-on: warning             # error (Standard), warning, info, none
+    args: --suggest              # weitere Optionen
+- uses: github/codeql-action/upload-sarif@v3
+  if: always()
+  with:
+    sarif_file: backlog.sarif
+```
+
+Weitere Eingaben: `preset`, `lang`, `python-version`. Als pre-commit-Hook (die Datei steht in `args`, der Hook läuft, wenn sich eine CSV- oder JSON-Datei ändert):
+
+```yaml
+repos:
+  - repo: https://github.com/seb-nsu/Backlog-Check
+    rev: v0.2.0
+    hooks:
+      - id: backlog-check
+        args: [backlog.csv, --fail-on, warning]
+```
 
 Die Presets übernehmen Kennung, Art, Titel, Beschreibung, Akzeptanzkriterien, Schätzung, Status, Epic und (Jira) das Änderungsdatum. Priorität, Rang und Verknüpfungen passen nicht ins Eingabeformat und werden nicht übernommen; bei Bedarf mit `--map` ergänzen. Tasks gelten als Story, Azure-DevOps-Features als Epic.
 
@@ -228,7 +259,7 @@ Checks a backlog against fixed rules before stories go into delivery: missing or
 Python 3.11 or newer. Install a fixed version from the repository:
 
 ```
-pip install "git+https://github.com/seb-nsu/Backlog-Check@v0.1.0"
+pip install "git+https://github.com/seb-nsu/Backlog-Check@v0.2.0"
 ```
 
 ### Example

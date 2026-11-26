@@ -10,7 +10,7 @@ from .reader import load_csv, load_file, load_json
 from .suggest import Suggestion, suggest, template
 from .summary import summarize
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "BacklogCheckError",

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "backlog-check"
-version = "0.1.0"
+version = "0.2.0"
 description = "Checks a backlog against fixed, traceable rules (BC-01 to BC-15)."
 readme = "README.md"
 license = { text = "MIT" }
