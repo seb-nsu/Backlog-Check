@@ -543,6 +543,18 @@
       "params": {}
     },
     {
+      "rule": "BC-17",
+      "severity": "warning",
+      "item": "BIB-72",
+      "related": [],
+      "field": "parent",
+      "span": null,
+      "message_key": "bc17.unknown_parent",
+      "params": {
+        "id": "BIB-6"
+      }
+    },
+    {
       "rule": "BC-16",
       "severity": "warning",
       "item": "BIB-73",
@@ -561,10 +573,10 @@
   "summary": {
     "items": 42,
     "checked": 41,
-    "findings": 40,
+    "findings": 41,
     "by_severity": {
       "info": 18,
-      "warning": 18,
+      "warning": 19,
       "error": 4
     },
     "by_rule": {
@@ -614,6 +626,9 @@
         "info": 2
       },
       "BC-16": {
+        "warning": 1
+      },
+      "BC-17": {
         "warning": 1
       }
     },

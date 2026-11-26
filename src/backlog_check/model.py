@@ -8,7 +8,7 @@ from typing import Any
 KINDS = ("epic", "story", "bug")
 PRIORITIES = ("must", "should", "could", "wont")
 SEVERITIES = ("info", "warning", "error")
-RULE_IDS = tuple(f"BC-{n:02d}" for n in range(1, 17))
+RULE_IDS = tuple(f"BC-{n:02d}" for n in range(1, 18))
 
 
 @dataclass(frozen=True)

@@ -31,6 +31,7 @@ DEFAULT_SEVERITY: dict[str, str] = {
     "BC-14": "warning",
     "BC-15": "info",
     "BC-16": "warning",
+    "BC-17": "warning",
 }
 
 # Text heuristics of BC-10 and BC-11 may not be raised above warning (KONZEPT.md).

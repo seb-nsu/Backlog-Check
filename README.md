@@ -135,6 +135,7 @@ print(template("story", "de"))
 | BC-14 | Reproduktion fehlt | Bug ohne Schritte zum Nachstellen in der Beschreibung | warning |
 | BC-15 | Ziel fehlt | Epic mit weniger als 5 Wörtern Beschreibung | info |
 | BC-16 | Platzhalter nicht ausgefüllt | Text enthält noch „<…>“, „TODO“, „TBD“, „FIXME“, „XXX“ oder „???“ (`placeholder_patterns`) | warning |
+| BC-17 | Unbekannte Kennung | `depends_on` oder `parent` nennt eine Kennung, die es im Backlog nicht gibt | warning |
 
 Erledigte Einträge (`done`, `closed`, `erledigt`, `abgeschlossen`) werden nicht geprüft, zählen aber als Ziel von Abhängigkeiten.
 
@@ -228,6 +229,7 @@ Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `d
 | BC-14 | Steps to reproduce missing | Bug without steps to reproduce in its description | warning |
 | BC-15 | Goal missing | Epic with fewer than 5 words of description | info |
 | BC-16 | Placeholder not filled in | Text still contains "<…>", "TODO", "TBD", "FIXME", "XXX" or "???" (`placeholder_patterns`) | warning |
+| BC-17 | Unknown id | `depends_on` or `parent` names an id that does not exist in the backlog | warning |
 
 Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages. An `ignore` entry given as an object with `field` or `related` suppresses exactly one finding.
 
