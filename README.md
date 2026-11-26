@@ -91,6 +91,21 @@ backlog-check --template story --output neue-story.json
 backlog-check backlog.csv --suggest --format markdown
 ```
 
+### Vorschläge anwenden
+
+`--fix` schreibt den Backlog mit den mechanisch möglichen Korrekturen als JSON im Eingabeformat (nach `--output` oder auf die Standardausgabe) und listet die Änderungen auf der Fehlerausgabe:
+
+```
+$ backlog-check backlog.csv --fix --output backlog-neu.json
+S-1  BC-04  Geteilt: Der Eintrag heißt jetzt „Rechnung erstellen“, neu ist S-1-2 „Rechnung versenden“.
+S-1  BC-07  Abhängigkeit S-2 ergänzt.
+S-4  BC-12  Epic E-1 als übergeordneten Eintrag gesetzt.
+S-5  BC-18  Kriterium acceptance_criteria[2] gestrichen, es wiederholte acceptance_criteria[0].
+4 Änderungen
+```
+
+Angewendet werden nur Korrekturen ohne inhaltliche Entscheidung: BC-04 (Titel teilen; der neue Eintrag übernimmt Art, Epic, Priorität und Status, Beschreibung und Kriterien bleiben beim alten), BC-07 (Abhängigkeit eintragen), BC-12 (Epic aus dem Vorschlag setzen, nur bei Stories ganz ohne `parent`) und BC-18 (doppeltes Kriterium streichen). Alles andere bleibt dem Autor überlassen; `--suggest` zeigt, wie. Die Eingabedatei wird nie überschrieben, außer man nennt sie bei `--output`. Rückgabewert `0`. In Python: `apply_fixes(items, findings, config)` gibt den Backlog als Liste und die Änderungen (`Change` mit `message_key`, `params`) zurück.
+
 Die Presets übernehmen Kennung, Art, Titel, Beschreibung, Akzeptanzkriterien, Schätzung, Status, Epic und (Jira) das Änderungsdatum. Priorität, Rang und Verknüpfungen passen nicht ins Eingabeformat und werden nicht übernommen; bei Bedarf mit `--map` ergänzen. Tasks gelten als Story, Azure-DevOps-Features als Epic.
 
 Rückgabewert: `0` ohne Befund der Schwere `error`, `1` mit, `2` bei ungültiger Eingabe oder Konfiguration (mit Zeilenangabe). Mit `--fail-on warning` (oder `info`) führen schon Warnungen (bzw. Hinweise) zu `1`; `--fail-on none` gibt bei gültiger Eingabe immer `0` zurück, etwa wenn nur ein Bericht entstehen soll.

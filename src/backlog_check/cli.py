@@ -1,6 +1,8 @@
 """Command line: ``backlog-check FILE [--format text|json|csv] [--lang de|en] [--suggest] ...``.
 
 ``backlog-check --template story|bug|epic`` prints a new item with placeholders instead.
+``backlog-check FILE --fix`` prints the backlog with the mechanical fixes applied (JSON) and
+lists the changes on stderr.
 
 Exit codes: 0 without a finding of severity error, 1 with one, 2 for invalid input or
 configuration. ``--fail-on warning|info|none`` moves the threshold for exit code 1.
@@ -24,6 +26,7 @@ from .catalog import CATALOG_LANGUAGES, format_value, load_catalog, render
 from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
+from .fix import Change, apply_fixes
 from .model import KINDS, SEVERITIES, Finding, Item
 from .presets import PRESETS
 from .reader import FIELDS, load_file
@@ -108,6 +111,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="print a new item of this kind with placeholders (JSON) instead of checking",
     )
     parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="print the backlog with the mechanical fixes applied (JSON) instead of a report",
+    )
+    parser.add_argument(
         "--fail-on",
         choices=FAIL_ON,
         default="error",
@@ -141,6 +149,12 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
         sys.stderr.write(format_error(error, args.lang) + "\n")
         return EXIT_INVALID
     findings = check(items, config)
+    if args.fix:
+        fixed, changes = apply_fixes(items, findings, config)
+        output = json.dumps(fixed, ensure_ascii=False, indent=2) + "\n"
+        _write_output(output, args.output, stdout)
+        sys.stderr.write(format_changes(changes, args.lang))
+        return EXIT_OK
     summary = summarize(items, findings, config)
     suggestions = suggest(items, findings, config) if args.suggest else None
     report = Report(items, findings, summary, args.lang, config, args.file, suggestions)
@@ -191,6 +205,16 @@ def _parse_mapping(entries: Sequence[str]) -> dict[str, str]:
             raise ConfigError("cli.invalid_map", {"value": entry, "fields": list(FIELDS)})
         mapping[source.strip()] = target.strip()
     return mapping
+
+
+def format_changes(changes: Sequence[Change], language: str) -> str:
+    """One line per applied fix, then their number."""
+    lines = [
+        f"{change.item}  {change.rule}  {render(change.message_key, change.params, language)}"
+        for change in changes
+    ]
+    lines.append(render("report.changes", {"count": len(changes)}, language))
+    return "\n".join(lines) + "\n"
 
 
 def format_error(error: BacklogCheckError, language: str) -> str:
