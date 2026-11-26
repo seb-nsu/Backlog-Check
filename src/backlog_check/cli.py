@@ -3,7 +3,7 @@
 ``backlog-check --template story|bug|epic`` prints a new item with placeholders instead.
 
 Exit codes: 0 without a finding of severity error, 1 with one, 2 for invalid input or
-configuration.
+configuration. ``--fail-on warning|info|none`` moves the threshold for exit code 1.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from .catalog import CATALOG_LANGUAGES, format_value, load_catalog, render
 from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
-from .model import KINDS, RULE_IDS, Finding, Item
+from .model import KINDS, RULE_IDS, SEVERITIES, Finding, Item
 from .presets import PRESETS
 from .reader import FIELDS, load_file
 from .suggest import Suggestion, suggest, template
@@ -34,6 +34,7 @@ EXIT_OK = 0
 EXIT_ERRORS = 1
 EXIT_INVALID = 2
 FORMATS = ("text", "json", "csv", "markdown", "sarif")
+FAIL_ON = ("error", "warning", "info", "none")
 SARIF_LEVELS = {"error": "error", "warning": "warning", "info": "note"}
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 PROJECT_URL = "https://github.com/seb-nsu/Backlog-Check"
@@ -101,6 +102,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=KINDS,
         help="print a new item of this kind with placeholders (JSON) instead of checking",
     )
+    parser.add_argument(
+        "--fail-on",
+        choices=FAIL_ON,
+        default="error",
+        help="lowest severity that makes the exit code 1 (none: always 0)",
+    )
     parser.add_argument("--output", help="write the result to this file instead of stdout")
     return parser
 
@@ -133,7 +140,16 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
     suggestions = suggest(items, findings, config) if args.suggest else None
     report = Report(items, findings, summary, args.lang, config, args.file, suggestions)
     _write_output(FORMATTERS[args.format](report), args.output, stdout)
-    return EXIT_ERRORS if summary["by_severity"]["error"] else EXIT_OK
+    return exit_code(findings, args.fail_on)
+
+
+def exit_code(findings: Sequence[Finding], fail_on: str = "error") -> int:
+    """1 if a finding has severity ``fail_on`` or higher, else 0; ``none`` never fails."""
+    if fail_on == "none":
+        return EXIT_OK
+    threshold = SEVERITIES.index(fail_on)
+    failed = any(SEVERITIES.index(f.severity) >= threshold for f in findings)
+    return EXIT_ERRORS if failed else EXIT_OK
 
 
 def _write_output(output: str, path: str | None, stdout: TextIO) -> None:

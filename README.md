@@ -93,7 +93,7 @@ backlog-check backlog.csv --suggest --format markdown
 
 Die Presets übernehmen Kennung, Art, Titel, Beschreibung, Akzeptanzkriterien, Schätzung, Status, Epic und (Jira) das Änderungsdatum. Priorität, Rang und Verknüpfungen passen nicht ins Eingabeformat und werden nicht übernommen; bei Bedarf mit `--map` ergänzen. Tasks gelten als Story, Azure-DevOps-Features als Epic.
 
-Rückgabewert: `0` ohne Befund der Schwere `error`, `1` mit, `2` bei ungültiger Eingabe oder Konfiguration (mit Zeilenangabe).
+Rückgabewert: `0` ohne Befund der Schwere `error`, `1` mit, `2` bei ungültiger Eingabe oder Konfiguration (mit Zeilenangabe). Mit `--fail-on warning` (oder `info`) führen schon Warnungen (bzw. Hinweise) zu `1`; `--fail-on none` gibt bei gültiger Eingabe immer `0` zurück, etwa wenn nur ein Bericht entstehen soll.
 
 Als Bibliothek:
 
@@ -198,7 +198,7 @@ backlog-check --template story --lang en            # new story with placeholder
 
 `--suggest` adds a concrete suggestion to every finding in every format, built from the item itself (e.g. BC-04 turns "Export and print report" into "Export report" and "print report"). Without it the output is unchanged. In Python: `suggest(items, findings, config)` returns one `Suggestion` (`message_key`, `params`) per finding; `template(kind, language)` returns a new item.
 
-Exit code: `0` without a finding of severity `error`, `1` with one, `2` for invalid input or configuration (with line number).
+Exit code: `0` without a finding of severity `error`, `1` with one, `2` for invalid input or configuration (with line number). `--fail-on warning` (or `info`) also fails on warnings (or infos); `--fail-on none` always returns `0` for valid input.
 
 ```python
 from backlog_check import check, load_file, render
