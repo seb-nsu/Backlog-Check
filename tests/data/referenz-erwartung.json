@@ -568,14 +568,26 @@
       "params": {
         "text": "<n>"
       }
+    },
+    {
+      "rule": "BC-18",
+      "severity": "info",
+      "item": "BIB-74",
+      "related": [],
+      "field": "acceptance_criteria[2]",
+      "span": null,
+      "message_key": "bc18.duplicate_criterion",
+      "params": {
+        "first": "acceptance_criteria[1]"
+      }
     }
   ],
   "summary": {
-    "items": 42,
-    "checked": 41,
-    "findings": 41,
+    "items": 43,
+    "checked": 42,
+    "findings": 42,
     "by_severity": {
-      "info": 18,
+      "info": 19,
       "warning": 19,
       "error": 4
     },
@@ -630,10 +642,13 @@
       },
       "BC-17": {
         "warning": 1
+      },
+      "BC-18": {
+        "info": 1
       }
     },
-    "stories": 32,
-    "ready_stories": 29,
-    "ready_ratio": 0.9062
+    "stories": 33,
+    "ready_stories": 30,
+    "ready_ratio": 0.9091
   }
 }

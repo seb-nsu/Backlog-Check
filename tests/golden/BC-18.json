@@ -64,6 +64,16 @@
           "acceptance_criteria": [
             "Die Rechnung enthält die Steuernummer."
           ]
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Rechnung archivieren",
+          "acceptance_criteria": [
+            "…",
+            ".",
+            "."
+          ]
         }
       ],
       "expected": []

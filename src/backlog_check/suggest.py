@@ -207,6 +207,10 @@ def _suggest_bc17_parent(ctx: Context, item: Item, finding: Finding) -> Result:
     return "bc17.fix_unknown_parent", {"id": finding.params["id"]}
 
 
+def _suggest_bc18(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc18.fix_remove_criterion", {"first": finding.params["first"]}
+
+
 SUGGESTERS = {
     "bc01.missing": _suggest_bc01,
     "bc02.unmeasurable": _suggest_bc02,
@@ -230,6 +234,7 @@ SUGGESTERS = {
     "bc16.unfilled_placeholder": _suggest_bc16,
     "bc17.unknown_dependency": _suggest_bc17_dependency,
     "bc17.unknown_parent": _suggest_bc17_parent,
+    "bc18.duplicate_criterion": _suggest_bc18,
 }
 
 # Catalog keys of the templates; acceptance criteria are numbered from 1.

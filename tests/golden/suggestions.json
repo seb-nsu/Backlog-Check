@@ -1224,6 +1224,60 @@
           }
         }
       ]
+    },
+    {
+      "name": "BC-18-de-1",
+      "rule": "BC-18",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung drucken",
+          "acceptance_criteria": [
+            "Der Druck klappt.",
+            "Der Druck klappt."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "item": "DE-1",
+          "field": "acceptance_criteria[1]",
+          "message_key": "bc18.fix_remove_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-18-en-1",
+      "rule": "BC-18",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "acceptance_criteria": [
+            "Printing works.",
+            "printing works"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "item": "EN-1",
+          "field": "acceptance_criteria[1]",
+          "message_key": "bc18.fix_remove_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        }
+      ]
     }
   ]
 }
