@@ -49,6 +49,7 @@
   "bc17.fix_unknown_dependency": "Korrigiere die Kennung {id} unter den Abhängigkeiten oder entferne sie, wenn es den Eintrag nicht mehr gibt.",
   "bc17.fix_unknown_parent": "Korrigiere die Kennung {id} im Feld „parent“ oder ordne den Eintrag einem vorhandenen Epic zu.",
   "bc18.fix_remove_criterion": "Streiche das Kriterium oder formuliere es so, dass es etwas anderes prüft als {first}.",
+  "custom.no_suggestion": "Für diese eigene Regel ist kein Vorschlag hinterlegt.",
   "rule.BC-01": "Akzeptanzkriterien fehlen",
   "rule.BC-02": "Kriterium nicht prüfbar",
   "rule.BC-03": "Eintrag zu groß",

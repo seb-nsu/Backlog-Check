@@ -49,6 +49,7 @@
   "bc17.fix_unknown_dependency": "Correct the id {id} in the dependencies or remove it if the item no longer exists.",
   "bc17.fix_unknown_parent": "Correct the id {id} in the field \"parent\" or assign the item to an existing epic.",
   "bc18.fix_remove_criterion": "Remove the criterion or reword it so that it tests something other than {first}.",
+  "custom.no_suggestion": "No suggestion is configured for this custom rule.",
   "rule.BC-01": "Acceptance criteria missing",
   "rule.BC-02": "Criterion not testable",
   "rule.BC-03": "Item too large",

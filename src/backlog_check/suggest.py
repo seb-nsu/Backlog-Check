@@ -56,6 +56,11 @@ def suggest(
 
 def _suggest_one(ctx: Context, finding: Finding) -> Suggestion:
     item = ctx.by_id[finding.item]
+    custom = {rule.message_key: rule for rule in ctx.config.custom_rules}
+    if finding.message_key in custom:
+        rule = custom[finding.message_key]
+        key = rule.suggestion_key if rule.suggestion is not None else "custom.no_suggestion"
+        return Suggestion(finding.rule, finding.item, key, dict(finding.params), finding.field)
     key, params = SUGGESTERS[finding.message_key](ctx, item, finding)
     return Suggestion(finding.rule, finding.item, key, params, finding.field)
 

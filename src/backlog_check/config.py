@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .errors import ConfigError
-from .model import RULE_IDS, SEVERITIES, Finding
+from .model import KINDS, RULE_IDS, SEVERITIES, Finding
 
 LANGUAGES = ("de", "en")
 LANGUAGE_SETTINGS = ("de", "en", "auto")
@@ -240,6 +240,15 @@ DEFAULT_DONE_STATUSES = ("done", "closed", "erledigt", "abgeschlossen")
 
 IGNORE_KEYS = {"rule", "item", "field", "related"}
 
+# Custom rules: ids like "TEAM-01"; the prefix "BC-" is reserved for the built-in rules.
+CUSTOM_RULE_ID = re.compile(r"[A-Za-z][A-Za-z0-9_]*-\d+")
+CUSTOM_RULE_KEYS = {
+    "id", "pattern", "mode", "fields", "kinds", "severity", "enabled", "title", "message",
+    "suggestion",
+}  # fmt: skip
+CUSTOM_MODES = ("forbid", "require")
+CUSTOM_FIELDS = ("title", "description", "acceptance_criteria")
+
 
 @dataclass(frozen=True)
 class IgnoreEntry:
@@ -257,6 +266,33 @@ class IgnoreEntry:
             and (self.field is None or finding.field == self.field)
             and (self.related is None or self.related in finding.related)
         )
+
+
+@dataclass(frozen=True)
+class CustomRule:
+    """A rule defined in the configuration: a regular expression that must not (``forbid``)
+    or must (``require``) match in the given fields. Its texts come from the configuration
+    and are looked up like catalog entries under ``rule.<id>``, ``custom.<id>`` and
+    ``custom.<id>.fix``."""
+
+    id: str
+    pattern: str
+    title: Mapping[str, str]
+    message: Mapping[str, str]
+    mode: str = "forbid"
+    fields: tuple[str, ...] = CUSTOM_FIELDS
+    kinds: tuple[str, ...] = KINDS
+    severity: str = "warning"
+    enabled: bool = True
+    suggestion: Mapping[str, str] | None = None
+
+    @property
+    def message_key(self) -> str:
+        return f"custom.{self.id}"
+
+    @property
+    def suggestion_key(self) -> str:
+        return f"custom.{self.id}.fix"
 
 
 @dataclass(frozen=True)
@@ -316,6 +352,7 @@ class Config:
     epic_goal_min_words: int = 5
     ignore: tuple[IgnoreEntry, ...] = ()
     list_separator: str | None = None
+    custom_rules: tuple[CustomRule, ...] = ()
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any] | None = None) -> Config:
@@ -328,7 +365,28 @@ class Config:
         if unknown:
             raise ConfigError("config.unknown_key", {"key": unknown[0]})
         values = {key: _PARSERS[key](data[key]) for key in sorted(data)}
+        custom_ids = {rule.id for rule in values.get("custom_rules", ())}
+        for entry in values.get("ignore", ()):
+            if entry.rule not in RULE_IDS and entry.rule not in custom_ids:
+                raise _invalid("ignore", [entry.rule, entry.item])
         return cls(**values)
+
+    def rule_ids(self) -> tuple[str, ...]:
+        """The built-in rule ids followed by the ids of the custom rules."""
+        return RULE_IDS + tuple(rule.id for rule in self.custom_rules)
+
+    def texts(self, language: str) -> dict[str, str]:
+        """Catalog entries of the custom rules in ``language``.
+
+        A text given only in the other language is used for both.
+        """
+        texts = {}
+        for rule in self.custom_rules:
+            texts[f"rule.{rule.id}"] = _in_language(rule.title, language)
+            texts[rule.message_key] = _in_language(rule.message, language)
+            if rule.suggestion is not None:
+                texts[rule.suggestion_key] = _in_language(rule.suggestion, language)
+        return texts
 
     def languages(self) -> tuple[str, ...]:
         """Languages whose word lists and patterns apply."""
@@ -338,6 +396,11 @@ class Config:
         return status is not None and status.strip().casefold() in {
             s.casefold() for s in self.done_statuses
         }
+
+
+def _in_language(texts: Mapping[str, str], language: str) -> str:
+    # ASSUMPTION: a custom text given in one language only is used for both languages.
+    return texts.get(language) or next(texts[lang] for lang in LANGUAGES if lang in texts)
 
 
 def _freeze_lists(data: Mapping[str, list[str]]) -> dict[str, tuple[str, ...]]:
@@ -469,13 +532,91 @@ def _parse_ignore(value: Any) -> tuple[IgnoreEntry, ...]:
             raise _invalid("ignore", entry)
         optional = [parts.get("field"), parts.get("related")]
         if (
-            parts["rule"] not in RULE_IDS
+            not isinstance(parts["rule"], str)
             or not isinstance(parts["item"], str)
             or not all(v is None or isinstance(v, str) for v in optional)
         ):
             raise _invalid("ignore", entry)
         result.append(IgnoreEntry(**parts))
     return tuple(result)
+
+
+def _parse_custom_rules(value: Any) -> tuple[CustomRule, ...]:
+    if not isinstance(value, list):
+        raise _invalid("custom_rules", value)
+    rules: list[CustomRule] = []
+    for index, entry in enumerate(value):
+        key = f"custom_rules[{index}]"
+        if not isinstance(entry, Mapping) or not {"id", "pattern", "title", "message"} <= set(
+            entry
+        ):
+            raise _invalid(key, entry)
+        unknown = sorted(set(entry) - CUSTOM_RULE_KEYS)
+        if unknown:
+            raise ConfigError("config.unknown_key", {"key": f"{key}.{unknown[0]}"})
+        rule_id = entry["id"]
+        if (
+            not isinstance(rule_id, str)
+            or not CUSTOM_RULE_ID.fullmatch(rule_id)
+            or rule_id.upper().startswith("BC-")
+            or rule_id in {rule.id for rule in rules}
+        ):
+            raise _invalid(f"{key}.id", rule_id)
+        pattern = entry["pattern"]
+        try:
+            if not isinstance(pattern, str) or not pattern or re.compile(pattern).match(""):
+                raise _invalid(f"{key}.pattern", pattern)
+        except re.error:
+            raise _invalid(f"{key}.pattern", pattern) from None
+        mode = entry.get("mode", "forbid")
+        if mode not in CUSTOM_MODES:
+            raise _invalid(f"{key}.mode", mode)
+        fields = _choice_list(
+            f"{key}.fields", entry.get("fields", list(CUSTOM_FIELDS)), CUSTOM_FIELDS
+        )
+        kinds = _choice_list(f"{key}.kinds", entry.get("kinds", list(KINDS)), KINDS)
+        severity = entry.get("severity", "warning")
+        if severity not in SEVERITIES:
+            raise _invalid(f"{key}.severity", severity)
+        enabled = entry.get("enabled", True)
+        if not isinstance(enabled, bool):
+            raise _invalid(f"{key}.enabled", enabled)
+        # The message may use {text} (the matched text) in mode forbid; require has no match.
+        params = {"text": ""} if mode == "forbid" else {}
+        title = _custom_texts(f"{key}.title", entry["title"], {})
+        message = _custom_texts(f"{key}.message", entry["message"], params)
+        suggestion = None
+        if "suggestion" in entry:
+            suggestion = _custom_texts(f"{key}.suggestion", entry["suggestion"], params)
+        rules.append(
+            CustomRule(
+                rule_id, pattern, title, message, mode, fields, kinds, severity, enabled, suggestion
+            )
+        )
+    return tuple(rules)
+
+
+def _choice_list(key: str, value: Any, choices: tuple[str, ...]) -> tuple[str, ...]:
+    if not isinstance(value, list) or not value or not all(v in choices for v in value):
+        raise _invalid(key, value)
+    # Keep the canonical order so that findings do not depend on the order in the file.
+    return tuple(choice for choice in choices if choice in value)
+
+
+def _custom_texts(key: str, value: Any, params: Mapping[str, str]) -> dict[str, str]:
+    if (
+        not isinstance(value, Mapping)
+        or not value
+        or set(value) - set(LANGUAGES)
+        or not all(isinstance(text, str) and text for text in value.values())
+    ):
+        raise _invalid(key, value)
+    for lang in sorted(value):
+        try:
+            value[lang].format(**params)
+        except (KeyError, IndexError, ValueError, AttributeError):
+            raise _invalid(f"{key}.{lang}", value[lang]) from None
+    return {lang: value[lang] for lang in LANGUAGES if lang in value}
 
 
 def _parse_reference_date(value: Any) -> str | None:
@@ -520,4 +661,5 @@ _PARSERS = {
     "epic_goal_min_words": _number("epic_goal_min_words", 0, integer=True),
     "ignore": _parse_ignore,
     "list_separator": _parse_separator,
+    "custom_rules": _parse_custom_rules,
 }

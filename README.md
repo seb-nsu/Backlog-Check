@@ -168,6 +168,40 @@ Ein Eintrag in `ignore` als Liste unterdrückt alle Befunde der Regel am Eintrag
 
 `language` ist `de`, `en` oder `auto` (beide). Zusätzlich einstellbar: `measurable_hints` (Ersatz je vagem Wort für die Vorschläge zu BC-02), `benefit_patterns`, `conjunctions`, `activity_patterns`, `units`, `term_stopwords`, `similarity_stopwords`, `repro_patterns` (je Sprache), `unit_conversions` und `list_separator`. BC-10 und BC-11 lassen sich höchstens auf `warning` setzen.
 
+### Eigene Regeln
+
+Unter `custom_rules` lassen sich eigene Regeln ohne Programmierung ergänzen: ein regulärer Ausdruck, der in den gewählten Feldern nicht vorkommen darf (`forbid`, Standard) oder vorkommen muss (`require`).
+
+```json
+{
+  "custom_rules": [
+    {
+      "id": "TEAM-01",
+      "pattern": "\\bASAP\\b",
+      "title": {"de": "Dringlichkeit ohne Termin", "en": "Urgency without a date"},
+      "message": {"de": "„{text}“ nennt keinen Termin.", "en": "\"{text}\" names no date."},
+      "suggestion": {"de": "Nenne ein Datum statt „{text}“."}
+    },
+    {
+      "id": "TEAM-02",
+      "pattern": "(?i)dsgvo",
+      "mode": "require",
+      "fields": ["acceptance_criteria"],
+      "kinds": ["story"],
+      "severity": "info",
+      "title": {"de": "Datenschutz fehlt"},
+      "message": {"de": "Kein Kriterium nennt die DSGVO."}
+    }
+  ]
+}
+```
+
+- `id`: eigene Kennung wie `TEAM-01`; `BC-` ist für die mitgelieferten Regeln reserviert.
+- `fields`: `title`, `description`, `acceptance_criteria` (Standard: alle drei); `kinds`: `epic`, `story`, `bug` (Standard: alle); `severity` (Standard `warning`); `enabled` (Standard `true`).
+- `forbid` meldet je Feld die erste Fundstelle; `{text}` im Text ist die Fundstelle. `require` meldet einen Befund je Eintrag, wenn keines der Felder passt.
+- Die Texte (`title`, `message`, optional `suggestion`) stehen in der Konfiguration, auf Deutsch, Englisch oder beidem; fehlt eine Sprache, gilt die andere. Befunde tragen `message_key` `custom.<id>`; in Python rendert `render(key, params, "de", config.texts("de"))` sie.
+- Eigene Regeln stehen in der Zusammenfassung und in SARIF hinter den mitgelieferten und lassen sich über `ignore` unterdrücken.
+
 ---
 
 ## English
@@ -234,6 +268,18 @@ Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `d
 | BC-18 | Duplicate criterion | Criterion repeats an earlier one of the same item (ignoring case, white space and closing punctuation) | info |
 
 Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages. An `ignore` entry given as an object with `field` or `related` suppresses exactly one finding.
+
+### Custom rules
+
+`custom_rules` in the configuration adds rules without code: a regular expression that must not (`forbid`, default) or must (`require`) occur in the chosen `fields` of the chosen `kinds`. Texts (`title`, `message`, optional `suggestion`) are given in the configuration in German, English or both; `{text}` is the match in mode `forbid`. Ids like `TEAM-01`; the prefix `BC-` is reserved. See the German section above for an example.
+
+### Apply suggestions
+
+`backlog-check backlog.csv --fix --output fixed.json` writes the backlog with the mechanical fixes applied as JSON in the input format and lists the changes on stderr; see the German section above.
+
+### GitHub Action and pre-commit
+
+See the German section above: `uses: seb-nsu/Backlog-Check@v0.2.0` in a workflow, or the hook `backlog-check` in `.pre-commit-config.yaml`.
 
 ## Lizenz / License
 

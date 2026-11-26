@@ -13,7 +13,7 @@ SOURCE = Path(__file__).parent.parent / "src" / "backlog_check"
 
 
 def _keys_in_source() -> set[str]:
-    pattern = re.compile(r"\"((?:bc\d\d|input|config|cli|report)\.[a-z_]+)\"")
+    pattern = re.compile(r"\"((?:bc\d\d|input|config|cli|report|custom)\.[a-z_]+)\"")
     keys = set()
     for path in SOURCE.rglob("*.py"):
         keys.update(pattern.findall(path.read_text(encoding="utf-8")))

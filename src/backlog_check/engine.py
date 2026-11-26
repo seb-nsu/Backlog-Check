@@ -10,6 +10,7 @@ from .context import Context
 from .model import Finding, Item
 from .reader import build_items
 from .rules import RULES
+from .rules.custom import check_custom
 
 
 def check(
@@ -23,13 +24,19 @@ def check(
     """
     cfg = config if isinstance(config, Config) else Config.from_dict(config)
     ctx = Context(to_items(items), cfg)
-    findings = [
+    found = [
         finding
         for rule_id, rule in RULES.items()
         if cfg.rules[rule_id].enabled
         for finding in rule(ctx)
-        if not any(entry.matches(finding) for entry in cfg.ignore)
     ]
+    found += [
+        finding
+        for custom in cfg.custom_rules
+        if custom.enabled
+        for finding in check_custom(ctx, custom)
+    ]
+    findings = [f for f in found if not any(entry.matches(f) for entry in cfg.ignore)]
     findings.sort(key=lambda f: (ctx.position[f.item], f.rule))
     return findings
 

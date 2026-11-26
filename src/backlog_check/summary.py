@@ -7,7 +7,7 @@ from typing import Any
 
 from .config import Config
 from .engine import to_items
-from .model import RULE_IDS, SEVERITIES, Finding, Item
+from .model import SEVERITIES, Finding, Item
 
 
 def summarize(
@@ -23,7 +23,7 @@ def summarize(
     with_error = {f.item for f in findings if f.severity == "error"}
     ready = sum(1 for story in stories if story.id not in with_error)
     by_rule: dict[str, dict[str, int]] = {}
-    for rule in RULE_IDS:
+    for rule in cfg.rule_ids():
         counts = {
             s: sum(1 for f in findings if f.rule == rule and f.severity == s) for s in SEVERITIES
         }
