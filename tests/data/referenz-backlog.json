@@ -680,5 +680,39 @@
     "depends_on": [],
     "parent": "BIB-6",
     "updated": null
+  },
+  {
+    "id": "BIB-73",
+    "kind": "story",
+    "title": "Leseliste teilen",
+    "description": "Als Leser möchte ich meine Leseliste per Link teilen, damit Freunde sie sehen.",
+    "acceptance_criteria": [
+      "Der Link öffnet die Liste in höchstens <n> Sekunden."
+    ],
+    "estimate": 3,
+    "priority": "could",
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-3",
+    "updated": null
+  },
+  {
+    "id": "BIB-74",
+    "kind": "story",
+    "title": "Vormerkung stornieren",
+    "description": "Als Leser möchte ich eine Vormerkung stornieren, damit das Medium frei wird.",
+    "acceptance_criteria": [
+      "Nach dem Stornieren ist das Medium in höchstens 1 Minute wieder vormerkbar.",
+      "Die Vormerkung verschwindet aus dem Konto.",
+      "Die Vormerkung verschwindet aus dem Konto"
+    ],
+    "estimate": 2,
+    "priority": "should",
+    "rank": null,
+    "status": null,
+    "depends_on": [],
+    "parent": "BIB-2",
+    "updated": null
   }
 ]

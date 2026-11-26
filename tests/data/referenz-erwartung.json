@@ -541,15 +541,54 @@
       "span": null,
       "message_key": "bc12.story_without_epic",
       "params": {}
+    },
+    {
+      "rule": "BC-17",
+      "severity": "warning",
+      "item": "BIB-72",
+      "related": [],
+      "field": "parent",
+      "span": null,
+      "message_key": "bc17.unknown_parent",
+      "params": {
+        "id": "BIB-6"
+      }
+    },
+    {
+      "rule": "BC-16",
+      "severity": "warning",
+      "item": "BIB-73",
+      "related": [],
+      "field": "acceptance_criteria[0]",
+      "span": [
+        39,
+        42
+      ],
+      "message_key": "bc16.unfilled_placeholder",
+      "params": {
+        "text": "<n>"
+      }
+    },
+    {
+      "rule": "BC-18",
+      "severity": "info",
+      "item": "BIB-74",
+      "related": [],
+      "field": "acceptance_criteria[2]",
+      "span": null,
+      "message_key": "bc18.duplicate_criterion",
+      "params": {
+        "first": "acceptance_criteria[1]"
+      }
     }
   ],
   "summary": {
-    "items": 41,
-    "checked": 40,
-    "findings": 39,
+    "items": 43,
+    "checked": 42,
+    "findings": 42,
     "by_severity": {
-      "info": 18,
-      "warning": 17,
+      "info": 19,
+      "warning": 19,
       "error": 4
     },
     "by_rule": {
@@ -597,10 +636,19 @@
       },
       "BC-15": {
         "info": 2
+      },
+      "BC-16": {
+        "warning": 1
+      },
+      "BC-17": {
+        "warning": 1
+      },
+      "BC-18": {
+        "info": 1
       }
     },
-    "stories": 31,
-    "ready_stories": 28,
-    "ready_ratio": 0.9032
+    "stories": 33,
+    "ready_stories": 30,
+    "ready_ratio": 0.9091
   }
 }

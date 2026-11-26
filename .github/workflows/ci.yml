@@ -26,3 +26,19 @@ jobs:
         run: |
           coverage run -m pytest
           coverage report
+
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the action on the reference backlog
+        uses: ./
+        with:
+          file: tests/data/referenz-backlog.json
+          config: tests/data/referenz-konfiguration.json
+          format: sarif
+          output: backlog.sarif
+          fail-on: none
+          args: --suggest
+      - name: Check the SARIF file
+        run: python -c "import json; assert json.load(open('backlog.sarif'))['runs'][0]['results']"

@@ -1,9 +1,11 @@
 """Command line: ``backlog-check FILE [--format text|json|csv] [--lang de|en] [--suggest] ...``.
 
 ``backlog-check --template story|bug|epic`` prints a new item with placeholders instead.
+``backlog-check FILE --fix`` prints the backlog with the mechanical fixes applied (JSON) and
+lists the changes on stderr.
 
 Exit codes: 0 without a finding of severity error, 1 with one, 2 for invalid input or
-configuration.
+configuration. ``--fail-on warning|info|none`` moves the threshold for exit code 1.
 """
 
 from __future__ import annotations
@@ -24,7 +26,8 @@ from .catalog import CATALOG_LANGUAGES, format_value, load_catalog, render
 from .config import Config
 from .engine import check
 from .errors import BacklogCheckError, ConfigError
-from .model import KINDS, RULE_IDS, Finding, Item
+from .fix import Change, apply_fixes
+from .model import KINDS, SEVERITIES, Finding, Item
 from .presets import PRESETS
 from .reader import FIELDS, load_file
 from .suggest import Suggestion, suggest, template
@@ -34,6 +37,7 @@ EXIT_OK = 0
 EXIT_ERRORS = 1
 EXIT_INVALID = 2
 FORMATS = ("text", "json", "csv", "markdown", "sarif")
+FAIL_ON = ("error", "warning", "info", "none")
 SARIF_LEVELS = {"error": "error", "warning": "warning", "info": "note"}
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 PROJECT_URL = "https://github.com/seb-nsu/Backlog-Check"
@@ -64,6 +68,11 @@ class Report:
     config: Config
     source: str
     suggestions: Sequence[Suggestion] | None = None  # one per finding, only with --suggest
+
+    @property
+    def catalog(self) -> dict[str, str]:
+        """The catalog of the report language plus the texts of the custom rules."""
+        return {**load_catalog(self.language), **self.config.texts(self.language)}
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -101,6 +110,17 @@ def build_parser() -> argparse.ArgumentParser:
         choices=KINDS,
         help="print a new item of this kind with placeholders (JSON) instead of checking",
     )
+    parser.add_argument(
+        "--fix",
+        action="store_true",
+        help="print the backlog with the mechanical fixes applied (JSON) instead of a report",
+    )
+    parser.add_argument(
+        "--fail-on",
+        choices=FAIL_ON,
+        default="error",
+        help="lowest severity that makes the exit code 1 (none: always 0)",
+    )
     parser.add_argument("--output", help="write the result to this file instead of stdout")
     return parser
 
@@ -129,11 +149,26 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
         sys.stderr.write(format_error(error, args.lang) + "\n")
         return EXIT_INVALID
     findings = check(items, config)
+    if args.fix:
+        fixed, changes = apply_fixes(items, findings, config)
+        output = json.dumps(fixed, ensure_ascii=False, indent=2) + "\n"
+        _write_output(output, args.output, stdout)
+        sys.stderr.write(format_changes(changes, args.lang))
+        return EXIT_OK
     summary = summarize(items, findings, config)
     suggestions = suggest(items, findings, config) if args.suggest else None
     report = Report(items, findings, summary, args.lang, config, args.file, suggestions)
     _write_output(FORMATTERS[args.format](report), args.output, stdout)
-    return EXIT_ERRORS if summary["by_severity"]["error"] else EXIT_OK
+    return exit_code(findings, args.fail_on)
+
+
+def exit_code(findings: Sequence[Finding], fail_on: str = "error") -> int:
+    """1 if a finding has severity ``fail_on`` or higher, else 0; ``none`` never fails."""
+    if fail_on == "none":
+        return EXIT_OK
+    threshold = SEVERITIES.index(fail_on)
+    failed = any(SEVERITIES.index(f.severity) >= threshold for f in findings)
+    return EXIT_ERRORS if failed else EXIT_OK
 
 
 def _write_output(output: str, path: str | None, stdout: TextIO) -> None:
@@ -172,6 +207,16 @@ def _parse_mapping(entries: Sequence[str]) -> dict[str, str]:
     return mapping
 
 
+def format_changes(changes: Sequence[Change], language: str) -> str:
+    """One line per applied fix, then their number."""
+    lines = [
+        f"{change.item}  {change.rule}  {render(change.message_key, change.params, language)}"
+        for change in changes
+    ]
+    lines.append(render("report.changes", {"count": len(changes)}, language))
+    return "\n".join(lines) + "\n"
+
+
 def format_error(error: BacklogCheckError, language: str) -> str:
     message = render(error.message_key, error.params, language)
     if error.line is not None:
@@ -203,7 +248,7 @@ def format_csv(report: Report) -> str:
             extra = [
                 hint.message_key,
                 json.dumps(hint.to_dict()["params"], ensure_ascii=False),
-                render(hint.message_key, hint.params, report.language),
+                render(hint.message_key, hint.params, report.language, report.catalog),
             ]
         writer.writerow(
             [
@@ -216,7 +261,7 @@ def format_csv(report: Report) -> str:
                 span[1],
                 finding.message_key,
                 json.dumps(finding.to_dict()["params"], ensure_ascii=False),
-                render(finding.message_key, finding.params, report.language),
+                render(finding.message_key, finding.params, report.language, report.catalog),
                 *extra,
             ]
         )
@@ -230,7 +275,7 @@ def format_text(report: Report) -> str:
         report.summary,
         report.language,
     )
-    catalog = load_catalog(language)
+    catalog = report.catalog
     by_id = {item.id: item for item in items}
     lines = [render("report.header", summary, language), ""]
     if not findings:
@@ -239,7 +284,7 @@ def format_text(report: Report) -> str:
         rule_title = catalog[f"rule.{finding.rule}"]
         severity = catalog[f"severity.{finding.severity}"]
         lines.append(f"{finding.item}  {severity}  {finding.rule} {rule_title}")
-        lines.append("    " + render(finding.message_key, finding.params, language))
+        lines.append("    " + render(finding.message_key, finding.params, language, catalog))
         details = []
         if finding.field:
             details.append(render("report.field", {"field": finding.field}, language))
@@ -251,15 +296,15 @@ def format_text(report: Report) -> str:
         if details:
             lines.append("    (" + "; ".join(details) + ")")
         if report.suggestions is not None:
-            lines.append("    " + _suggestion_text(report.suggestions[index], language))
+            lines.append("    " + _suggestion_text(report.suggestions[index], language, catalog))
         lines.append("")
     lines.append(catalog["report.summary"])
     lines += _summary_lines(summary, catalog, language)
     return "\n".join(lines) + "\n"
 
 
-def _suggestion_text(suggestion: Suggestion, language: str) -> str:
-    text = render(suggestion.message_key, suggestion.params, language)
+def _suggestion_text(suggestion: Suggestion, language: str, catalog: dict[str, str]) -> str:
+    text = render(suggestion.message_key, suggestion.params, language, catalog)
     return render("report.suggestion", {"text": text}, language)
 
 
@@ -292,7 +337,7 @@ def field_excerpt(item: Item, finding: Finding) -> str | None:
 
 def format_markdown(report: Report) -> str:
     language, summary = report.language, report.summary
-    catalog = load_catalog(language)
+    catalog = report.catalog
     lines = ["# backlog-check", "", render("report.header", summary, language), ""]
     if report.findings:
         columns = ("item", "severity", "rule", "finding", "field")
@@ -305,12 +350,12 @@ def format_markdown(report: Report) -> str:
                 finding.item,
                 catalog[f"severity.{finding.severity}"],
                 f"{finding.rule} {catalog[f'rule.{finding.rule}']}",
-                render(finding.message_key, finding.params, language),
+                render(finding.message_key, finding.params, language, catalog),
                 f"`{finding.field}`" if finding.field else "",
             ]
             if report.suggestions is not None:
                 hint = report.suggestions[index]
-                cells.append(render(hint.message_key, hint.params, language))
+                cells.append(render(hint.message_key, hint.params, language, catalog))
             lines.append("| " + " | ".join(c.replace("|", "\\|") for c in cells) + " |")
     else:
         lines.append(catalog["report.no_findings"])
@@ -321,19 +366,22 @@ def format_markdown(report: Report) -> str:
 
 def format_sarif(report: Report) -> str:
     """SARIF 2.1.0 for code platforms; each finding points to the line of its item."""
-    catalog = load_catalog(report.language)
+    catalog = report.catalog
     by_id = {item.id: item for item in report.items}
+    settings = {rule: (s.severity, s.enabled) for rule, s in report.config.rules.items()}
+    settings.update({r.id: (r.severity, r.enabled) for r in report.config.custom_rules})
+    rule_ids = report.config.rule_ids()
     rules = [
         {
             "id": rule,
             "name": catalog[f"rule.{rule}"],
             "shortDescription": {"text": catalog[f"rule.{rule}"]},
             "defaultConfiguration": {
-                "level": SARIF_LEVELS[report.config.rules[rule].severity],
-                "enabled": report.config.rules[rule].enabled,
+                "level": SARIF_LEVELS[settings[rule][0]],
+                "enabled": settings[rule][1],
             },
         }
-        for rule in RULE_IDS
+        for rule in rule_ids
     ]
     uri = Path(report.source).as_posix()
     results = []
@@ -351,14 +399,16 @@ def format_sarif(report: Report) -> str:
             properties["suggestion"] = {
                 "message_key": hint.message_key,
                 "params": hint.to_dict()["params"],
-                "text": render(hint.message_key, hint.params, report.language),
+                "text": render(hint.message_key, hint.params, report.language, catalog),
             }
         results.append(
             {
                 "ruleId": finding.rule,
-                "ruleIndex": RULE_IDS.index(finding.rule),
+                "ruleIndex": rule_ids.index(finding.rule),
                 "level": SARIF_LEVELS[finding.severity],
-                "message": {"text": render(finding.message_key, finding.params, report.language)},
+                "message": {
+                    "text": render(finding.message_key, finding.params, report.language, catalog)
+                },
                 "locations": [
                     {
                         "physicalLocation": location,

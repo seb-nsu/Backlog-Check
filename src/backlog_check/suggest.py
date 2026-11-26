@@ -56,6 +56,11 @@ def suggest(
 
 def _suggest_one(ctx: Context, finding: Finding) -> Suggestion:
     item = ctx.by_id[finding.item]
+    custom = {rule.message_key: rule for rule in ctx.config.custom_rules}
+    if finding.message_key in custom:
+        rule = custom[finding.message_key]
+        key = rule.suggestion_key if rule.suggestion is not None else "custom.no_suggestion"
+        return Suggestion(finding.rule, finding.item, key, dict(finding.params), finding.field)
     key, params = SUGGESTERS[finding.message_key](ctx, item, finding)
     return Suggestion(finding.rule, finding.item, key, params, finding.field)
 
@@ -195,6 +200,22 @@ def _suggest_bc15(ctx: Context, item: Item, finding: Finding) -> Result:
     return "bc15.fix_add_goal", {"min_words": finding.params["min_words"]}
 
 
+def _suggest_bc16(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc16.fix_fill_placeholder", {"text": finding.params["text"]}
+
+
+def _suggest_bc17_dependency(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc17.fix_unknown_dependency", {"id": finding.params["id"]}
+
+
+def _suggest_bc17_parent(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc17.fix_unknown_parent", {"id": finding.params["id"]}
+
+
+def _suggest_bc18(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc18.fix_remove_criterion", {"first": finding.params["first"]}
+
+
 SUGGESTERS = {
     "bc01.missing": _suggest_bc01,
     "bc02.unmeasurable": _suggest_bc02,
@@ -215,6 +236,10 @@ SUGGESTERS = {
     "bc13.stale": _suggest_bc13,
     "bc14.missing_repro_steps": _suggest_bc14,
     "bc15.missing_goal": _suggest_bc15,
+    "bc16.unfilled_placeholder": _suggest_bc16,
+    "bc17.unknown_dependency": _suggest_bc17_dependency,
+    "bc17.unknown_parent": _suggest_bc17_parent,
+    "bc18.duplicate_criterion": _suggest_bc18,
 }
 
 # Catalog keys of the templates; acceptance criteria are numbered from 1.

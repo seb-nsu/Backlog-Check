@@ -1,0 +1,72 @@
+name: backlog-check
+description: Check a backlog (CSV or JSON) against the rules BC-01 to BC-18 and custom rules.
+author: seb-nsu
+branding:
+  icon: check-square
+  color: blue
+
+inputs:
+  file:
+    description: Backlog as .csv or .json, relative to the repository root.
+    required: true
+  config:
+    description: Configuration as JSON file.
+    required: false
+    default: ""
+  preset:
+    description: Column mapping of a Jira or Azure DevOps export (jira, azure-devops).
+    required: false
+    default: ""
+  lang:
+    description: Language of the report (de, en).
+    required: false
+    default: de
+  format:
+    description: Output format (text, json, csv, markdown, sarif).
+    required: false
+    default: text
+  output:
+    description: Write the result to this file instead of the log, e.g. backlog.sarif.
+    required: false
+    default: ""
+  fail-on:
+    description: Lowest severity that fails the step (error, warning, info, none).
+    required: false
+    default: error
+  args:
+    description: Further command line arguments, separated by spaces (e.g. "--suggest").
+    required: false
+    default: ""
+  python-version:
+    description: Python version used to run the check.
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install backlog-check
+      shell: bash
+      run: python -m pip install --quiet "$GITHUB_ACTION_PATH"
+    - name: Check backlog
+      shell: bash
+      env:
+        BC_FILE: ${{ inputs.file }}
+        BC_CONFIG: ${{ inputs.config }}
+        BC_PRESET: ${{ inputs.preset }}
+        BC_LANG: ${{ inputs.lang }}
+        BC_FORMAT: ${{ inputs.format }}
+        BC_OUTPUT: ${{ inputs.output }}
+        BC_FAIL_ON: ${{ inputs.fail-on }}
+        BC_ARGS: ${{ inputs.args }}
+      run: |
+        set -euo pipefail
+        cmd=(backlog-check "$BC_FILE" --lang "$BC_LANG" --format "$BC_FORMAT" --fail-on "$BC_FAIL_ON")
+        if [ -n "$BC_CONFIG" ]; then cmd+=(--config "$BC_CONFIG"); fi
+        if [ -n "$BC_PRESET" ]; then cmd+=(--preset "$BC_PRESET"); fi
+        if [ -n "$BC_OUTPUT" ]; then cmd+=(--output "$BC_OUTPUT"); fi
+        read -r -a extra <<< "$BC_ARGS"
+        "${cmd[@]}" ${extra[@]+"${extra[@]}"}

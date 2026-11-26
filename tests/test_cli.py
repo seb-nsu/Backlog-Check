@@ -49,6 +49,29 @@ def test_exit_code_1_with_errors_and_text_report(tmp_path):
     assert "S-2  Error  BC-01 Acceptance criteria missing" in out
 
 
+@pytest.mark.parametrize(
+    ("fail_on", "expected"), [("error", 0), ("warning", 1), ("info", 1), ("none", 0)]
+)
+def test_fail_on_with_warning_only(tmp_path, fail_on, expected):
+    items = [{**CLEAN[0], "acceptance_criteria": ["Die Rechnung lädt schnell."]}]
+    code, _ = _run(_write(tmp_path, "b.json", items), "--fail-on", fail_on)
+    assert code == expected
+
+
+@pytest.mark.parametrize(
+    ("fail_on", "expected"), [("error", 0), ("warning", 0), ("info", 1), ("none", 0)]
+)
+def test_fail_on_with_info_only(tmp_path, fail_on, expected):
+    items = [{**CLEAN[0], "description": "Als Kundin möchte ich die Rechnung laden."}]
+    code, _ = _run(_write(tmp_path, "b.json", items), "--fail-on", fail_on)
+    assert code == expected
+
+
+def test_fail_on_none_with_errors(tmp_path):
+    assert _run(_write(tmp_path, "b.json", WITH_ERROR), "--fail-on", "none")[0] == 0
+    assert _run(_write(tmp_path, "b.json", WITH_ERROR), "--fail-on", "warning")[0] == 1
+
+
 def test_exit_code_2_with_line_for_invalid_input(tmp_path, capsys):
     path = _write(tmp_path, "b.csv", "id,kind,title\nA,story,T\nB,task,U\n")
     code, out = _run(path)

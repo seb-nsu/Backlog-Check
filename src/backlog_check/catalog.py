@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from functools import cache
 from importlib import resources
 from typing import Any
@@ -29,7 +30,18 @@ def format_value(value: Any, language: str) -> str:
     return str(value)
 
 
-def render(message_key: str, params: dict[str, Any], language: str) -> str:
-    """Build the sentence for ``message_key`` from the catalog of ``language``."""
-    template = load_catalog(language)[message_key]
+def render(
+    message_key: str,
+    params: dict[str, Any],
+    language: str,
+    texts: Mapping[str, str] | None = None,
+) -> str:
+    """Build the sentence for ``message_key`` from the catalog of ``language``.
+
+    ``texts`` adds entries to the catalog, e.g. ``Config.texts(language)`` for custom rules.
+    """
+    if texts is not None and message_key in texts:
+        template = texts[message_key]
+    else:
+        template = load_catalog(language)[message_key]
     return template.format(**{key: format_value(v, language) for key, v in params.items()})

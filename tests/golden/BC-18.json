@@ -1,0 +1,127 @@
+{
+  "rule": "BC-18",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung drucken",
+          "acceptance_criteria": [
+            "Die Rechnung enthält die Steuernummer.",
+            "Der Druck dauert höchstens 3 Sekunden.",
+            "die Rechnung  enthält die Steuernummer",
+            "Der Druck dauert höchstens 3 Sekunden!"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "severity": "info",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[2]",
+          "span": null,
+          "message_key": "bc18.duplicate_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        },
+        {
+          "rule": "BC-18",
+          "severity": "info",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[3]",
+          "span": null,
+          "message_key": "bc18.duplicate_criterion",
+          "params": {
+            "first": "acceptance_criteria[1]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung drucken",
+          "acceptance_criteria": [
+            "Die Rechnung enthält die Steuernummer.",
+            "Die Rechnung enthält die Steuernummer nicht doppelt."
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "story",
+          "title": "Rechnung senden",
+          "acceptance_criteria": [
+            "Die Rechnung enthält die Steuernummer."
+          ]
+        },
+        {
+          "id": "DE-3",
+          "kind": "story",
+          "title": "Rechnung archivieren",
+          "acceptance_criteria": [
+            "…",
+            ".",
+            "."
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "acceptance_criteria": [
+            "The invoice shows the tax number.",
+            "THE INVOICE SHOWS THE TAX NUMBER"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "severity": "info",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria[1]",
+          "span": null,
+          "message_key": "bc18.duplicate_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "acceptance_criteria": [
+            "The invoice shows the tax number.",
+            "The invoice shows the tax numbers."
+          ]
+        }
+      ],
+      "expected": []
+    }
+  ]
+}

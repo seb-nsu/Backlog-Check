@@ -1105,6 +1105,179 @@
           }
         }
       ]
+    },
+    {
+      "name": "BC-16-de-1",
+      "rule": "BC-16",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung <Format> drucken"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "item": "DE-1",
+          "field": "title",
+          "message_key": "bc16.fix_fill_placeholder",
+          "params": {
+            "text": "<Format>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-16-en-1",
+      "rule": "BC-16",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "description": "TBD"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "item": "EN-1",
+          "field": "description",
+          "message_key": "bc16.fix_fill_placeholder",
+          "params": {
+            "text": "TBD"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-17-de-1",
+      "rule": "BC-17",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung drucken",
+          "depends_on": [
+            "DE-9"
+          ],
+          "parent": "DE-8"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-17",
+          "item": "DE-1",
+          "field": "depends_on[0]",
+          "message_key": "bc17.fix_unknown_dependency",
+          "params": {
+            "id": "DE-9"
+          }
+        },
+        {
+          "rule": "BC-17",
+          "item": "DE-1",
+          "field": "parent",
+          "message_key": "bc17.fix_unknown_parent",
+          "params": {
+            "id": "DE-8"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-17-en-1",
+      "rule": "BC-17",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "depends_on": [
+            "EN-9"
+          ],
+          "parent": "EN-8"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-17",
+          "item": "EN-1",
+          "field": "depends_on[0]",
+          "message_key": "bc17.fix_unknown_dependency",
+          "params": {
+            "id": "EN-9"
+          }
+        },
+        {
+          "rule": "BC-17",
+          "item": "EN-1",
+          "field": "parent",
+          "message_key": "bc17.fix_unknown_parent",
+          "params": {
+            "id": "EN-8"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-18-de-1",
+      "rule": "BC-18",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung drucken",
+          "acceptance_criteria": [
+            "Der Druck klappt.",
+            "Der Druck klappt."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "item": "DE-1",
+          "field": "acceptance_criteria[1]",
+          "message_key": "bc18.fix_remove_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-18-en-1",
+      "rule": "BC-18",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "acceptance_criteria": [
+            "Printing works.",
+            "printing works"
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-18",
+          "item": "EN-1",
+          "field": "acceptance_criteria[1]",
+          "message_key": "bc18.fix_remove_criterion",
+          "params": {
+            "first": "acceptance_criteria[0]"
+          }
+        }
+      ]
     }
   ]
 }

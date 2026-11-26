@@ -1,0 +1,216 @@
+{
+  "rule": "BC-16",
+  "cases": [
+    {
+      "name": "de-trigger",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "<Tätigkeit der Rolle>",
+          "description": "Als Leser möchte ich TODO, damit ich Zeit spare.",
+          "acceptance_criteria": [
+            "Die Liste lädt in höchstens <n> Sekunden.",
+            "Fehlertext: TBD"
+          ]
+        },
+        {
+          "id": "DE-2",
+          "kind": "bug",
+          "title": "Absturz ???",
+          "description": "Schritte: FIXME und <…>"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "title",
+          "span": [
+            0,
+            21
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "<Tätigkeit der Rolle>"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "description",
+          "span": [
+            21,
+            25
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "TODO"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[0]",
+          "span": [
+            28,
+            31
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "<n>"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-1",
+          "related": [],
+          "field": "acceptance_criteria[1]",
+          "span": [
+            12,
+            15
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "TBD"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-2",
+          "related": [],
+          "field": "title",
+          "span": [
+            8,
+            11
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "???"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "DE-2",
+          "related": [],
+          "field": "description",
+          "span": [
+            10,
+            15
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "FIXME"
+          }
+        }
+      ]
+    },
+    {
+      "name": "de-near-miss",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Todo-Liste anzeigen",
+          "description": "Als Leser möchte ich eine Todo-Liste, damit ich nichts vergesse.",
+          "acceptance_criteria": [
+            "Antwortzeit < 2 s und Größe > 1 MB.",
+            "Wert a <b bleibt.",
+            "Ist das richtig?? Ja."
+          ]
+        }
+      ],
+      "expected": []
+    },
+    {
+      "name": "en-trigger",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Export <report>",
+          "description": "As a <role> I want an export so that I can share it.",
+          "acceptance_criteria": [
+            "Exports finish within XXX seconds."
+          ]
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "title",
+          "span": [
+            7,
+            15
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "<report>"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "description",
+          "span": [
+            5,
+            11
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "<role>"
+          }
+        },
+        {
+          "rule": "BC-16",
+          "severity": "warning",
+          "item": "EN-1",
+          "related": [],
+          "field": "acceptance_criteria[0]",
+          "span": [
+            22,
+            25
+          ],
+          "message_key": "bc16.unfilled_placeholder",
+          "params": {
+            "text": "XXX"
+          }
+        }
+      ]
+    },
+    {
+      "name": "en-near-miss",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Show todo list",
+          "description": "As a reader I want a todo list so that I forget nothing.",
+          "acceptance_criteria": [
+            "Response time < 2 s and size > 1 MB.",
+            "Really?? Yes."
+          ]
+        }
+      ],
+      "expected": []
+    }
+  ]
+}
