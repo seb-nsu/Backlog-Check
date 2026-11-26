@@ -127,8 +127,14 @@ def test_template_passes_the_content_rules(kind, language):
     item = template(kind, language)
     assert item["kind"] == kind
     findings = check([item], {"language": language})
-    # The only finding allowed for a template on its own: an epic without stories.
-    assert [f.message_key for f in findings] == (
+    # BC-16 flags the placeholders until they are filled in; apart from that, the only
+    # finding allowed for a template on its own is an epic without stories.
+    assert {f.field for f in findings if f.rule == "BC-16"} == {
+        "title",
+        "description",
+        *(f"acceptance_criteria[{n}]" for n in range(len(item.get("acceptance_criteria", [])))),
+    } - ({"acceptance_criteria[1]"} if kind == "bug" else set())
+    assert [f.message_key for f in findings if f.rule != "BC-16"] == (
         ["bc12.epic_without_stories"] if kind == "epic" else []
     )
 
@@ -136,6 +142,6 @@ def test_template_passes_the_content_rules(kind, language):
 def test_template_with_epic_and_story_and_unknown_kind():
     epic, story = template("epic", "de"), template("story", "de")
     story["parent"] = epic["id"]
-    assert check([epic, story]) == []
+    assert check([epic, story], {"rules": {"BC-16": {"enabled": False}}}) == []
     with pytest.raises(ValueError):
         template("task", "de")

@@ -541,15 +541,30 @@
       "span": null,
       "message_key": "bc12.story_without_epic",
       "params": {}
+    },
+    {
+      "rule": "BC-16",
+      "severity": "warning",
+      "item": "BIB-73",
+      "related": [],
+      "field": "acceptance_criteria[0]",
+      "span": [
+        39,
+        42
+      ],
+      "message_key": "bc16.unfilled_placeholder",
+      "params": {
+        "text": "<n>"
+      }
     }
   ],
   "summary": {
-    "items": 41,
-    "checked": 40,
-    "findings": 39,
+    "items": 42,
+    "checked": 41,
+    "findings": 40,
     "by_severity": {
       "info": 18,
-      "warning": 17,
+      "warning": 18,
       "error": 4
     },
     "by_rule": {
@@ -597,10 +612,13 @@
       },
       "BC-15": {
         "info": 2
+      },
+      "BC-16": {
+        "warning": 1
       }
     },
-    "stories": 31,
-    "ready_stories": 28,
-    "ready_ratio": 0.9032
+    "stories": 32,
+    "ready_stories": 29,
+    "ready_ratio": 0.9062
   }
 }

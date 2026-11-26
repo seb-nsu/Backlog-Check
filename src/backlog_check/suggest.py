@@ -195,6 +195,10 @@ def _suggest_bc15(ctx: Context, item: Item, finding: Finding) -> Result:
     return "bc15.fix_add_goal", {"min_words": finding.params["min_words"]}
 
 
+def _suggest_bc16(ctx: Context, item: Item, finding: Finding) -> Result:
+    return "bc16.fix_fill_placeholder", {"text": finding.params["text"]}
+
+
 SUGGESTERS = {
     "bc01.missing": _suggest_bc01,
     "bc02.unmeasurable": _suggest_bc02,
@@ -215,6 +219,7 @@ SUGGESTERS = {
     "bc13.stale": _suggest_bc13,
     "bc14.missing_repro_steps": _suggest_bc14,
     "bc15.missing_goal": _suggest_bc15,
+    "bc16.unfilled_placeholder": _suggest_bc16,
 }
 
 # Catalog keys of the templates; acceptance criteria are numbered from 1.

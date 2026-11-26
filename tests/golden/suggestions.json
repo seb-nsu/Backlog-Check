@@ -1105,6 +1105,53 @@
           }
         }
       ]
+    },
+    {
+      "name": "BC-16-de-1",
+      "rule": "BC-16",
+      "language": "de",
+      "items": [
+        {
+          "id": "DE-1",
+          "kind": "story",
+          "title": "Rechnung <Format> drucken"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "item": "DE-1",
+          "field": "title",
+          "message_key": "bc16.fix_fill_placeholder",
+          "params": {
+            "text": "<Format>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "BC-16-en-1",
+      "rule": "BC-16",
+      "language": "en",
+      "items": [
+        {
+          "id": "EN-1",
+          "kind": "story",
+          "title": "Print invoice",
+          "description": "TBD"
+        }
+      ],
+      "expected": [
+        {
+          "rule": "BC-16",
+          "item": "EN-1",
+          "field": "description",
+          "message_key": "bc16.fix_fill_placeholder",
+          "params": {
+            "text": "TBD"
+          }
+        }
+      ]
     }
   ]
 }

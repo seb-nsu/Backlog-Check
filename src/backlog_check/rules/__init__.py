@@ -1,4 +1,4 @@
-"""Registry of rules BC-01 to BC-15. Each rule takes a Context and yields findings."""
+"""Registry of rules BC-01 to BC-16. Each rule takes a Context and yields findings."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from .bc12_structure import check_bc12
 from .bc13_stale import check_bc13
 from .bc14_missing_repro import check_bc14
 from .bc15_epic_goal import check_bc15
+from .bc16_placeholder import check_bc16
 
 Rule = Callable[[Context], Iterable[Finding]]
 
@@ -40,4 +41,5 @@ RULES: dict[str, Rule] = {
     "BC-13": check_bc13,
     "BC-14": check_bc14,
     "BC-15": check_bc15,
+    "BC-16": check_bc16,
 }

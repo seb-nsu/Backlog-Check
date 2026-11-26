@@ -30,6 +30,7 @@ DEFAULT_SEVERITY: dict[str, str] = {
     "BC-13": "info",
     "BC-14": "warning",
     "BC-15": "info",
+    "BC-16": "warning",
 }
 
 # Text heuristics of BC-10 and BC-11 may not be raised above warning (KONZEPT.md).
@@ -204,6 +205,15 @@ DEFAULT_REPRO_PATTERNS: dict[str, list[str]] = {
     "en": [r"\bsteps?\b", r"\brepro", r"(?m)^\s*1[.)]\s"],
 }
 
+# BC-16: placeholders left in the text, matched case-sensitively. Angle brackets count only
+# when no space follows "<" or precedes ">", so comparisons like "< 2 s" do not match.
+DEFAULT_PLACEHOLDER_PATTERNS: dict[str, list[str]] = {
+    "de": [r"<[^\s<>](?:[^<>\n]{0,78}[^\s<>])?>", r"\bTODO\b", r"\bTBD\b", r"\bFIXME\b",
+           r"\bXXX\b", r"\?{3,}"],
+    "en": [r"<[^\s<>](?:[^<>\n]{0,78}[^\s<>])?>", r"\bTODO\b", r"\bTBD\b", r"\bFIXME\b",
+           r"\bXXX\b", r"\?{3,}"],
+}  # fmt: skip
+
 # Suggestions for BC-02: vague word (case-folded) -> measurable wording to replace it with.
 # Placeholders in angle brackets are left for the author to fill in.
 DEFAULT_MEASURABLE_HINTS: dict[str, dict[str, str]] = {
@@ -292,6 +302,9 @@ class Config:
     )
     repro_patterns: Mapping[str, tuple[str, ...]] = field(
         default_factory=lambda: _freeze_lists(DEFAULT_REPRO_PATTERNS)
+    )
+    placeholder_patterns: Mapping[str, tuple[str, ...]] = field(
+        default_factory=lambda: _freeze_lists(DEFAULT_PLACEHOLDER_PATTERNS)
     )
     measurable_hints: Mapping[str, Mapping[str, str]] = field(
         default_factory=lambda: {lang: dict(h) for lang, h in DEFAULT_MEASURABLE_HINTS.items()}
@@ -496,6 +509,9 @@ _PARSERS = {
     "term_stopwords": _per_language("term_stopwords", DEFAULT_TERM_STOPWORDS),
     "similarity_stopwords": _per_language("similarity_stopwords", DEFAULT_SIMILARITY_STOPWORDS),
     "repro_patterns": _per_language("repro_patterns", DEFAULT_REPRO_PATTERNS, True),
+    "placeholder_patterns": _per_language(
+        "placeholder_patterns", DEFAULT_PLACEHOLDER_PATTERNS, True
+    ),
     "measurable_hints": _word_table("measurable_hints", DEFAULT_MEASURABLE_HINTS),
     "reference_date": _parse_reference_date,
     "stale_days": _number("stale_days", 0, integer=True),

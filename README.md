@@ -134,6 +134,7 @@ print(template("story", "de"))
 | BC-13 | Eintrag veraltet | `updated` liegt mehr als 180 Tage vor dem Stichtag `reference_date` (nur mit Stichtag) | info |
 | BC-14 | Reproduktion fehlt | Bug ohne Schritte zum Nachstellen in der Beschreibung | warning |
 | BC-15 | Ziel fehlt | Epic mit weniger als 5 Wörtern Beschreibung | info |
+| BC-16 | Platzhalter nicht ausgefüllt | Text enthält noch „<…>“, „TODO“, „TBD“, „FIXME“, „XXX“ oder „???“ (`placeholder_patterns`) | warning |
 
 Erledigte Einträge (`done`, `closed`, `erledigt`, `abgeschlossen`) werden nicht geprüft, zählen aber als Ziel von Abhängigkeiten.
 
@@ -226,6 +227,7 @@ Input fields: `id`, `kind` (`epic`, `story`, `bug`) and `title` are required; `d
 | BC-13 | Item stale | `updated` is more than 180 days before the reference date `reference_date` (only with a reference date) | info |
 | BC-14 | Steps to reproduce missing | Bug without steps to reproduce in its description | warning |
 | BC-15 | Goal missing | Epic with fewer than 5 words of description | info |
+| BC-16 | Placeholder not filled in | Text still contains "<…>", "TODO", "TBD", "FIXME", "XXX" or "???" (`placeholder_patterns`) | warning |
 
 Done items are not checked but still count as targets of dependencies. Configuration is described above; the keys are the same in both languages. An `ignore` entry given as an object with `field` or `related` suppresses exactly one finding.
 

@@ -70,7 +70,7 @@ def test_overrides():
         ({"colour": 1}, "config.unknown_key"),
         ({"language": "fr"}, "config.invalid_value"),
         ({"rules": []}, "config.invalid_value"),
-        ({"rules": {"BC-16": {}}}, "config.unknown_rule"),
+        ({"rules": {"BC-99": {}}}, "config.unknown_rule"),
         ({"rules": {"BC-01": True}}, "config.invalid_value"),
         ({"rules": {"BC-01": {"enable": True}}}, "config.invalid_value"),
         ({"rules": {"BC-01": {"enabled": "yes"}}}, "config.invalid_value"),
