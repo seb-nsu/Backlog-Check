@@ -71,7 +71,11 @@ backlog-check backlog.csv --format sarif             # SARIF 2.1.0 für Code-Pla
 backlog-check backlog.csv --reference-date 2026-11-12  # Stichtag für BC-13
 backlog-check backlog.csv --fail-on warning          # schon Warnungen ergeben Rückgabewert 1
 backlog-check backlog.csv --fix --output neu.json    # Backlog mit angewendeten Korrekturen
+backlog-check backlog.csv --color never             # ohne Farben (Standard: farbig nur im Terminal)
 ```
+
+Im Terminal ist der Schweregrad farbig (Fehler rot, Warnung gelb, Hinweis cyan). In Dateien, Pipes und mit der
+Umgebungsvariable `NO_COLOR` bleibt die Ausgabe unverändert und byteweise gleich.
 
 ### Stories verbessern und neu anlegen
 

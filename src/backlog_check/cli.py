@@ -14,6 +14,7 @@ import argparse
 import csv
 import io
 import json
+import os
 import re
 import sys
 from collections.abc import Sequence
@@ -38,6 +39,10 @@ EXIT_ERRORS = 1
 EXIT_INVALID = 2
 FORMATS = ("text", "json", "csv", "markdown", "sarif")
 FAIL_ON = ("error", "warning", "info", "none")
+COLOR_MODES = ("auto", "always", "never")
+# ANSI colours for the severity in the text report: error red, warning yellow, info cyan
+ANSI = {"error": "\033[1;31m", "warning": "\033[33m", "info": "\033[36m"}
+ANSI_RESET = "\033[0m"
 SARIF_LEVELS = {"error": "error", "warning": "warning", "info": "note"}
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 PROJECT_URL = "https://github.com/seb-nsu/Backlog-Check"
@@ -122,6 +127,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="lowest severity that makes the exit code 1 (none: always 0)",
     )
     parser.add_argument("--output", help="write the result to this file instead of stdout")
+    parser.add_argument(
+        "--color",
+        choices=COLOR_MODES,
+        default="auto",
+        help="colour the severity in the text report (auto: only in a terminal, not with NO_COLOR)",
+    )
     return parser
 
 
@@ -158,8 +169,38 @@ def main(argv: Sequence[str] | None = None, stdout: TextIO | None = None) -> int
     summary = summarize(items, findings, config)
     suggestions = suggest(items, findings, config) if args.suggest else None
     report = Report(items, findings, summary, args.lang, config, args.file, suggestions)
-    _write_output(FORMATTERS[args.format](report), args.output, stdout)
+    output = FORMATTERS[args.format](report)
+    if args.format == "text" and use_color(args.color, args.output, stdout):
+        output = colorize(output, report)
+    _write_output(output, args.output, stdout)
     return exit_code(findings, args.fail_on)
+
+
+def use_color(mode: str, path: str | None, stdout: TextIO) -> bool:
+    """Colours only for a terminal: ``always``, or ``auto`` without --output, without NO_COLOR and
+    on a TTY. Files and pipes keep the plain, byte-identical output."""
+    if mode != "auto":
+        return mode == "always"
+    if path or "NO_COLOR" in os.environ:
+        return False
+    isatty = getattr(stdout, "isatty", None)
+    return bool(isatty and isatty())
+
+
+def colorize(text: str, report: Report) -> str:
+    """Colours the severity word in the heading line of each finding."""
+    catalog = report.catalog
+    labels = {f"  {catalog[f'severity.{s}']}  ": s for s in SEVERITIES}
+    lines = []
+    for line in text.split("\n"):
+        if not line.startswith(" "):
+            for label, severity in labels.items():
+                if label in line:
+                    word = label.strip()
+                    line = line.replace(label, f"  {ANSI[severity]}{word}{ANSI_RESET}  ", 1)
+                    break
+        lines.append(line)
+    return "\n".join(lines)
 
 
 def exit_code(findings: Sequence[Finding], fail_on: str = "error") -> int:
