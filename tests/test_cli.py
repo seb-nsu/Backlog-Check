@@ -317,3 +317,42 @@ def test_missing_file_argument(capsys):
         _run()
     assert info.value.code == 2
     assert "file" in capsys.readouterr().err
+
+
+class _Tty(io.StringIO):
+    def isatty(self):
+        return True
+
+
+def test_color_always_marks_severity(tmp_path):
+    code, out = _run(_write(tmp_path, "b.json", WITH_ERROR), "--color", "always")
+    assert code == 1
+    assert "\033[1;31mFehler\033[0m" in out
+    assert "\033[" not in out.split("Zusammenfassung")[1]  # only the finding lines
+
+
+def test_color_auto_only_on_terminal(tmp_path, monkeypatch):
+    path = _write(tmp_path, "b.json", WITH_ERROR)
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    tty = _Tty()
+    main([path], stdout=tty)
+    assert "\033[1;31m" in tty.getvalue()
+    _, plain = _run(path)  # StringIO is no terminal
+    assert "\033[" not in plain
+    monkeypatch.setenv("NO_COLOR", "1")
+    tty = _Tty()
+    main([path], stdout=tty)
+    assert "\033[" not in tty.getvalue()
+
+
+def test_color_never_and_files_stay_plain(tmp_path, monkeypatch):
+    monkeypatch.delenv("NO_COLOR", raising=False)
+    path = _write(tmp_path, "b.json", WITH_ERROR)
+    tty = _Tty()
+    main([path, "--color", "never"], stdout=tty)
+    assert "\033[" not in tty.getvalue()
+    target = tmp_path / "out.txt"
+    main([path, "--output", str(target)], stdout=_Tty())
+    assert "\033[" not in target.read_text("utf-8")
+    _, json_out = _run(path, "--format", "json", "--color", "always")
+    assert "\033[" not in json_out
